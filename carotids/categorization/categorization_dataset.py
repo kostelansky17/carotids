@@ -12,11 +12,11 @@ class CategorizationDataset(Dataset):
 
         self.img_dirs = img_dirs
         self.transformations = transformations
-    
+
     def _prepare_data(self, img_dirs):
         data_files = []
         labels = []
-        
+
         for key in img_dirs:
             img_names = sorted(os.listdir(img_dirs[key]))
             data_files.extend(img_names)
@@ -25,10 +25,10 @@ class CategorizationDataset(Dataset):
         return data_files, labels
 
     def __getitem__(self, index):
-        label =  self.labels[index]
+        label = self.labels[index]
 
-        img = load_img(self.img_dirs[label], self.data_files[index])      
+        img = load_img(self.img_dirs[label], self.data_files[index])
         return self.transformations(img), torch.tensor(label)
-        
+
     def __len__(self):
         return len(self.labels)

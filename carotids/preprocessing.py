@@ -48,10 +48,7 @@ def convert_img_to_feature(img_path, crop=False):
 def create_categorization_features():
     X = np.vstack((load_dir(PATH_LONG), load_dir(PATH_TRAV)))
     y = np.concatenate(
-        (
-            np.ones(len(os.listdir(PATH_LONG))),
-            np.zeros(len(os.listdir(PATH_TRAV))),
-        )
+        (np.ones(len(os.listdir(PATH_LONG))), np.zeros(len(os.listdir(PATH_TRAV))))
     )
 
     return X, y
@@ -59,9 +56,15 @@ def create_categorization_features():
 
 def load_position(dir_path, label_file):
     label = np.loadtxt(os.path.join(dir_path, label_file), delimiter=";")
-    
-    transformed_label = np.asarray([label[0] - label[2]/2, label[1] - label[3]/2,
-                                    label[0] + label[2]/2, label[1] + label[3]/2])
+
+    transformed_label = np.asarray(
+        [
+            label[0] - label[2] / 2,
+            label[1] - label[3] / 2,
+            label[0] + label[2] / 2,
+            label[1] + label[3] / 2,
+        ]
+    )
 
     return transformed_label
 

@@ -18,4 +18,4 @@ def train_classifier():
     X, y = create_categorization_features()
     clf = LogisticRegression()
     clf.fit(X, y)
-    return  clf
+    return clf

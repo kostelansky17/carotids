@@ -14,6 +14,7 @@ def create_small_cnn(categories):
 
     return model
 
+
 def create_vgg(categories, pretrained=True, all_layers=True):
     model = models.vgg11(pretrained=pretrained)
 

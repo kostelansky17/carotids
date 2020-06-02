@@ -5,7 +5,7 @@ from torch.utils.data import DataLoader, random_split
 def compute_mean_image_dataloader(dataloader):
     mean = 0.0
     for images, _ in dataloader:
-        batch_samples = images.size(0) 
+        batch_samples = images.size(0)
         images = images.view(batch_samples, images.size(1), -1)
         mean += images.mean(2).sum(0)
     mean = mean / len(dataloader.dataset)
@@ -18,8 +18,8 @@ def compute_std_image_dataloader(dataloader, mean):
     for images, _ in dataloader:
         batch_samples = images.size(0)
         images = images.view(batch_samples, images.size(1), -1)
-        var += ((images - mean.unsqueeze(1))**2).sum([0,2])
-    std = torch.sqrt(var / (len(dataloader.dataset)*224*224))
+        var += ((images - mean.unsqueeze(1)) ** 2).sum([0, 2])
+    std = torch.sqrt(var / (len(dataloader.dataset) * 224 * 224))
 
     return std
 

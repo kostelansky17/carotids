@@ -6,21 +6,26 @@ from carotids.metrics import accuracy
 from carotids.utils import train_val_split
 
 
-def train_model(model, train_data, loss, optimizer, device, scheduler=None, val_split=0.1, num_epochs=25):
-    losses = {
-        "train": [],
-        "val": [],
-    }
-    accuracies = {
-        "train": [],
-        "val": [],
-    }
+def train_model(
+    model,
+    train_data,
+    loss,
+    optimizer,
+    device,
+    scheduler=None,
+    val_split=0.1,
+    num_epochs=25,
+):
+    losses = {"train": [], "val": []}
+    accuracies = {"train": [], "val": []}
 
-    train_loader, train_size, val_loader, val_size = train_val_split(train_data, val_split)
+    train_loader, train_size, val_loader, val_size = train_val_split(
+        train_data, val_split
+    )
 
     best_model = copy.deepcopy(model.state_dict())
-    best_loss = 10**8
-    
+    best_loss = 10 ** 8
+
     for epoch in range(num_epochs):
         print(f"Epoch {epoch}/{num_epochs - 1}")
         print("-" * 12)
@@ -37,7 +42,6 @@ def train_model(model, train_data, loss, optimizer, device, scheduler=None, val_
             with torch.set_grad_enabled(True):
                 outputs = model(inputs)
 
-            
                 l = loss(outputs, labels)
                 l.backward()
                 optimizer.step()
@@ -67,15 +71,19 @@ def train_model(model, train_data, loss, optimizer, device, scheduler=None, val_
             best_loss = val_epoch_loss
             best_model = copy.deepcopy(model.state_dict())
 
-        losses["train"].append(train_epoch_loss / train_size) 
-        losses["val"].append(val_epoch_loss / val_size) 
-        
-        accuracies["train"].append(train_epoch_acc / train_size) 
-        accuracies["val"].append(val_epoch_acc / val_size) 
+        losses["train"].append(train_epoch_loss / train_size)
+        losses["val"].append(val_epoch_loss / val_size)
 
-        print(f"Train loss: {train_epoch_loss / train_size}, Train Accuracy: {train_epoch_acc / train_size}")
-        print(f"Val. loss: {val_epoch_loss / val_size}, Val. Accuracy: {val_epoch_acc / val_size}")
-        
+        accuracies["train"].append(train_epoch_acc / train_size)
+        accuracies["val"].append(val_epoch_acc / val_size)
+
+        print(
+            f"Train loss: {train_epoch_loss / train_size}, Train Accuracy: {train_epoch_acc / train_size}"
+        )
+        print(
+            f"Val. loss: {val_epoch_loss / val_size}, Val. Accuracy: {val_epoch_acc / val_size}"
+        )
+
     print("-" * 12)
     print(f"Best val. loss: {best_loss/val_size}")
 
