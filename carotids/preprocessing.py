@@ -19,9 +19,9 @@ SIZE_SMALL = (1200, 870)
 
 def load_dir(dir_path, crop=False):
     data = []
-    for file in os.listdir(dir_path):
+    for file in sorted(os.listdir(dir_path)):
         file_path = os.path.join(dir_path, file)
-        img = convert_img_to_feature(file_path, crop_shape)
+        img = convert_img_to_feature(file_path, crop)
         data.append(img)
 
     return np.vstack(data)
@@ -41,17 +41,8 @@ def convert_img_to_feature(img_path, crop=False):
     if crop:
         img = crop_image(img)
 
-    img = img.resize((50, 50), Image.ANTIALIAS)
-    return np.asarray(img).flatten() / COLOR_MAX
-
-
-def create_categorization_features():
-    X = np.vstack((load_dir(PATH_LONG), load_dir(PATH_TRAV)))
-    y = np.concatenate(
-        (np.ones(len(os.listdir(PATH_LONG))), np.zeros(len(os.listdir(PATH_TRAV))))
-    )
-
-    return X, y
+    img = img.resize((50, 50))
+    return np.asarray(img)[:, :, 0].flatten() / COLOR_MAX
 
 
 def load_position(dir_path, label_file):
@@ -84,3 +75,17 @@ def load_img(dir_path, img_file):
     img = Image.open(joined_path)
 
     return img
+
+
+def normalize_data(X_train, X_test=None):
+    train_mean = np.mean(X_train)
+    train_std = np.mean(X_train)
+
+    X_train = (X_train - train_mean) / train_std
+
+    if X_test:
+        X_test = (X_test - train_mean) / train_std
+
+        return X_train, X_test
+
+    return X_train

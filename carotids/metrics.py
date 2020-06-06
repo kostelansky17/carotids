@@ -1,10 +1,15 @@
+import numpy as np
 import torch
 
 
-def accuracy(output, label):
+def accuracy_torch(output, label):
     _, predicted = torch.max(output.data, 1)
 
     return (predicted == label).sum().item() / len(label)
+
+
+def accuracy_np(output, label):
+    return np.mean(output == label)
 
 
 def iou(labels, outputs, treshold):

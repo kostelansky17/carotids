@@ -2,7 +2,7 @@ import copy
 
 import torch
 
-from carotids.metrics import accuracy
+from carotids.metrics import accuracy_torch
 from carotids.utils import train_val_split
 
 
