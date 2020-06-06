@@ -5,7 +5,6 @@ from PIL import Image
 
 
 COLOR_MAX = 255
-crop_shape = (181, 141, 831, 750)
 
 PATH_LONG = "/home/martin/Documents/cartroids/data/categorization/test/praha_long"
 PATH_TRAV = "/home/martin/Documents/cartroids/data/categorization/test/praha_trav"
@@ -83,7 +82,7 @@ def normalize_data(X_train, X_test=None):
 
     X_train = (X_train - train_mean) / train_std
 
-    if X_test:
+    if X_test is not None:
         X_test = (X_test - train_mean) / train_std
 
         return X_train, X_test

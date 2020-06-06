@@ -13,8 +13,8 @@ from carotids.categorization.categorization_linear import (
     try_hyperparameters,
 )
 from carotids.metrics import accuracy_np, accuracy_torch
+from carotids.preprocessing import normalize_data
 from carotids.train_model import train_model
-from carotids.metrics import accuracy_np
 
 
 TRAIN_IMG_DIRS = {
@@ -47,6 +47,7 @@ BIG_TRANSFORMATIONS = transforms.Compose(
 def logreg_categorization(train_img_dirs, test_img_dirs):
     X_train, y_train = create_categorization_features(train_img_dirs)
     X_test, y_test = create_categorization_features(test_img_dirs)
+    X_train, X_test = normalize_data(X_train, X_test)
 
     Cs = [{"C": c} for c in np.logspace(0.01, 1, 10, endpoint=True)]
     test_accs, best_C = try_hyperparameters(X_train, y_train, Cs)
