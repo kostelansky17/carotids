@@ -18,14 +18,14 @@ from carotids.train_model import train_model
 
 
 TRAIN_IMG_DIRS = {
-    0: "/contentdrive/My Drive/cartroids/categorization/train/long",
-    1: "/contentdrive/My Drive/cartroids/categorization/train/trav",
-    2: "/contentdrive/My Drive/cartroids/categorization/train/diff",
+    0: "/content/drive/My Drive/cartroids/categorization/train/long",
+    1: "/content/drive/My Drive/cartroids/categorization/train/trav",
+    2: "/content/drive/My Drive/cartroids/categorization/train/diff",
 }
 TEST_IMG_DIRS = {
-    0: "/contentdrive/My Drive/cartroids/categorization/test/long",
-    1: "/contentdrive/My Drive/cartroids/categorization/test/trav",
-    2: "/contentdrive/My Drive/cartroids/categorization/test/diff",
+    0: "/content/drive/My Drive/cartroids/categorization/test/long",
+    1: "/content/drive/My Drive/cartroids/categorization/test/trav",
+    2: "/content/drive/My Drive/cartroids/categorization/test/diff",
 }
 CATEGORIES = 3
 SMALL_TRANSFORMATIONS = transforms.Compose(
