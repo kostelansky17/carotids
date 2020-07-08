@@ -1,6 +1,6 @@
 import numpy as np
 import torch
-
+from torch.utils.data import DataLoader
 
 def accuracy_torch(output, label):
     _, predicted = torch.max(output.data, 1)
@@ -10,6 +10,23 @@ def accuracy_torch(output, label):
 
 def accuracy_np(output, label):
     return np.mean(output == label)
+
+
+def accuracy_dataset(dataset, model, device):
+    accuracy = 0.0
+    dataloader = DataLoader(dataset, batch_size=64, shuffle=False)
+    
+    for inputs, labels in dataloader:
+            model.eval()
+
+            inputs = inputs.to(device)
+            labels = labels.to(device)
+
+            outputs = model(inputs)        
+            accuracy += accuracy_torch(outputs, labels) * inputs.size(0)
+    
+    return accuracy / len(dataset)
+
 
 
 def iou(labels, outputs, treshold):

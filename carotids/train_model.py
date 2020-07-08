@@ -50,7 +50,7 @@ def train_model(
                     scheduler.step()
 
                 train_epoch_loss += l.item() * inputs.size(0)
-                train_epoch_acc += accuracy(outputs, labels) * inputs.size(0)
+                train_epoch_acc += accuracy_torch(outputs, labels) * inputs.size(0)
 
         val_epoch_loss = 0.0
         val_epoch_acc = 0
@@ -65,7 +65,7 @@ def train_model(
             l = loss(outputs, labels)
 
             val_epoch_loss += l.item() * inputs.size(0)
-            val_epoch_acc += accuracy(outputs, labels) * inputs.size(0)
+            val_epoch_acc += accuracy_torch(outputs, labels) * inputs.size(0)
 
         if val_epoch_loss < best_loss:
             best_loss = val_epoch_loss
