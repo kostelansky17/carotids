@@ -38,7 +38,7 @@ COMPLEX_SMALL_TRANSFORMATIONS_TRAIN = transforms.Compose(
         transforms.Resize((28, 28)),
         transforms.ToTensor(),
         transforms.Normalize([0.1147, 0.1146, 0.1136], [0.0183, 0.0181, 0.0182]),
-        GaussianNoiseTransform(std=0.001),
+        #GaussianNoiseTransform(std=0.001),
     ]
 )
 SIMPLE_SMALL_TRANSFORMATIONS_TRAIN = transforms.Compose(
@@ -62,7 +62,7 @@ COMPLEX_BIG_TRANSFORMATIONS_TRAIN = transforms.Compose(
         transforms.Resize((224, 224)),
         transforms.ToTensor(),
         transforms.Normalize([0.1145, 0.1144, 0.1134], [0.1694, 0.1675, 0.1684]),
-        GaussianNoiseTransform(std=0.001),
+        #GaussianNoiseTransform(std=0.001),
     ]
 )
 SIMPLE_BIG_TRANSFORMATIONS_TRAIN = transforms.Compose(
