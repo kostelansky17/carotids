@@ -1,3 +1,5 @@
+import sys
+
 import numpy as np
 import torch
 import torch.nn as nn
@@ -15,6 +17,7 @@ from carotids.categorization.categorization_linear import (
 from carotids.metrics import accuracy_np, accuracy_dataset
 from carotids.preprocessing import normalize_data
 from carotids.train_model import train_model
+from carotids.utils import GaussianNoiseTransform
 
 
 TRAIN_IMG_DIRS = {
@@ -27,15 +30,59 @@ TEST_IMG_DIRS = {
     1: "/content/drive/My Drive/cartroids/categorization/test/trav",
     2: "/content/drive/My Drive/cartroids/categorization/test/diff",
 }
+TRAIN_IMG_DIRS = {
+    0: "/home/martin/Documents/cartroids/data/categorization/train/long",
+    1: "/home/martin/Documents/cartroids/data/categorization/train/trav",
+    2: "/home/martin/Documents/cartroids/data/categorization/train/diff",
+}
+TEST_IMG_DIRS = {
+    0: "/home/martin/Documents/cartroids/data/categorization/test/long",
+    1: "/home/martin/Documents/cartroids/data/categorization/test/trav",
+    2: "/home/martin/Documents/cartroids/data/categorization/test/diff",
+}
 CATEGORIES = 3
-SMALL_TRANSFORMATIONS = transforms.Compose(
+COMPLEX_SMALL_TRANSFORMATIONS_TRAIN = transforms.Compose(
+    [
+        transforms.RandomHorizontalFlip(),
+        transforms.RandomVerticalFlip(),
+        transforms.Resize((28, 28)),
+        transforms.ToTensor(),
+        transforms.Normalize([0.1147, 0.1146, 0.1136], [0.0183, 0.0181, 0.0182]),
+        GaussianNoiseTransform(std=0.1),
+    ]
+)
+SIMPLE_SMALL_TRANSFORMATIONS_TRAIN = transforms.Compose(
     [
         transforms.Resize((28, 28)),
         transforms.ToTensor(),
         transforms.Normalize([0.1147, 0.1146, 0.1136], [0.0183, 0.0181, 0.0182]),
     ]
 )
-BIG_TRANSFORMATIONS = transforms.Compose(
+SMALL_TRANSFORMATIONS_TEST = transforms.Compose(
+    [
+        transforms.Resize((28, 28)),
+        transforms.ToTensor(),
+        transforms.Normalize([0.1147, 0.1146, 0.1136], [0.0183, 0.0181, 0.0182]),
+    ]
+)
+COMPLEX_BIG_TRANSFORMATIONS_TRAIN = transforms.Compose(
+    [
+        transforms.RandomHorizontalFlip(),
+        transforms.RandomVerticalFlip(),
+        transforms.Resize((224, 224)),
+        transforms.ToTensor(),
+        transforms.Normalize([0.1145, 0.1144, 0.1134], [0.1694, 0.1675, 0.1684]),
+        GaussianNoiseTransform(std=0.1),
+    ]
+)
+SIMPLE_BIG_TRANSFORMATIONS_TRAIN = transforms.Compose(
+    [
+        transforms.Resize((224, 224)),
+        transforms.ToTensor(),
+        transforms.Normalize([0.1145, 0.1144, 0.1134], [0.1694, 0.1675, 0.1684]),
+    ]
+)
+BIG_TRANSFORMATIONS_TEST = transforms.Compose(
     [
         transforms.Resize((224, 224)),
         transforms.ToTensor(),
@@ -61,9 +108,9 @@ def logreg_categorization(train_img_dirs, test_img_dirs):
     return clf
 
 
-def cnn_categorization(model, transformations):
-    train_dataset = CategorizationDataset(TRAIN_IMG_DIRS, transformations)
-    test_dataset = CategorizationDataset(TEST_IMG_DIRS, transformations)
+def cnn_categorization(model, train_transformations, test_transformations):
+    train_dataset = CategorizationDataset(TRAIN_IMG_DIRS, train_transformations)
+    test_dataset = CategorizationDataset(TEST_IMG_DIRS, test_transformations)
 
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
     model.to(device)
@@ -81,31 +128,73 @@ def cnn_categorization(model, transformations):
     return model, losses, accuracies, test_accuracy
 
 
-def small_cnn_categorization():
+def small_cnn_categorization(TRANSFORMATIONS_TRAIN):
     print("Small CNN for categorization...")
-    
+
     model = create_small_cnn(CATEGORIES)
-    model, losses, accuracies, test_accuracy = cnn_categorization(model, SMALL_TRANSFORMATIONS)
-    
+    model, losses, accuracies, test_accuracy = cnn_categorization(
+        model, TRANSFORMATIONS_TRAIN, SMALL_TRANSFORMATIONS_TEST
+    )
+
     print(f"Test accuracy: {test_accuracy}")
     return model, losses, accuracies, test_accuracy
 
 
-def big_cnn_categorization():
+def big_cnn_categorization(TRANSFORMATIONS_TRAIN):
     print("Big CNN for categorization...")
-    
+
     model = create_vgg(CATEGORIES)
-    model, losses, accuracies, test_accuracy = cnn_categorization(model, BIG_TRANSFORMATIONS)
-    
+    model, losses, accuracies, test_accuracy = cnn_categorization(
+        model, TRANSFORMATIONS_TRAIN, BIG_TRANSFORMATIONS_TEST
+    )
+
     print(f"Test accuracy: {test_accuracy}")
     return model, losses, accuracies, test_accuracy
 
 
-def main():
-    logreg_categorization(TRAIN_IMG_DIRS, TEST_IMG_DIRS)
-    small_cnn_categorization()
-    big_cnn_categorization()
+def main(args, model_save_path=None):
+    SIZE, TRASFORM = args
+
+    categorization_function = None
+    transformation_train = None
+
+    if SIZE == "SMALL":
+        categorization_function = small_cnn_categorization
+
+        if TRASFORM == "SIMPLE":
+            transformation_train = SIMPLE_SMALL_TRANSFORMATIONS_TRAIN
+        elif TRASFORM == "COMPLEX":
+            transformation_train = COMPLEX_SMALL_TRANSFORMATIONS_TRAIN
+        else:
+            print("Invalid transformation.")
+            return
+
+    elif SIZE == "BIG":
+        categorization_function = big_cnn_categorization
+
+        if TRASFORM == "SIMPLE":
+            transformation_train = SIMPLE_BIG_TRANSFORMATIONS_TRAIN
+        elif TRASFORM == "COMPLEX":
+            transformation_train = COMPLEX_SMALL_TRANSFORMATIONS_TRAIN
+        else:
+            print("Invalid transformation.")
+            return
+    else:
+        print("Invalid model size.")
+        return
+
+    model, losses, accuracies, test_accuracy = categorization_function(
+        transformation_train
+    )
+
+    if model_save_path:
+        torch.save(model.state_dict(), model_save_path)
 
 
 if __name__ == "__main__":
-    main()
+    args = sys.argv[1:]
+
+    if len(args) != 2:
+        print("Invalid number of parameters.")
+    else:
+        main(args)

@@ -2,6 +2,20 @@ import torch
 from torch.utils.data import DataLoader, random_split
 
 
+class GaussianNoiseTransform(object):
+    def __init__(self, mean=0.0, std=1.0):
+        self.std = std
+        self.mean = mean
+
+    def __call__(self, tensor):
+        return tensor + torch.randn(tensor.size()) * self.std + self.mean
+
+    def __repr__(self):
+        return self.__class__.__name__ + "(mean={0}, std={1})".format(
+            self.mean, self.std
+        )
+
+
 def compute_mean_image_dataloader(dataloader):
     mean = 0.0
     for images, _ in dataloader:
@@ -34,7 +48,9 @@ def compute_normalization_image_dataloader(dataloader):
 def train_val_split(dataset, val_split=0.1, batch_size=64):
     val_size = int(len(dataset) * val_split)
     train_size = len(dataset) - val_size
-    trainset, valset = random_split(dataset, [train_size, val_size])
+    trainset, valset = random_split(
+        dataset, [train_size, val_size], generator=torch.Generator().manual_seed(17)
+    )
 
     train_loader = DataLoader(trainset, batch_size=batch_size, shuffle=True)
     val_loader = DataLoader(valset, batch_size=batch_size, shuffle=False)
