@@ -30,16 +30,6 @@ TEST_IMG_DIRS = {
     1: "/content/drive/My Drive/cartroids/categorization/test/trav",
     2: "/content/drive/My Drive/cartroids/categorization/test/diff",
 }
-TRAIN_IMG_DIRS = {
-    0: "/home/martin/Documents/cartroids/data/categorization/train/long",
-    1: "/home/martin/Documents/cartroids/data/categorization/train/trav",
-    2: "/home/martin/Documents/cartroids/data/categorization/train/diff",
-}
-TEST_IMG_DIRS = {
-    0: "/home/martin/Documents/cartroids/data/categorization/test/long",
-    1: "/home/martin/Documents/cartroids/data/categorization/test/trav",
-    2: "/home/martin/Documents/cartroids/data/categorization/test/diff",
-}
 CATEGORIES = 3
 COMPLEX_SMALL_TRANSFORMATIONS_TRAIN = transforms.Compose(
     [
