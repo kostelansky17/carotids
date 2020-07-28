@@ -48,9 +48,9 @@ def compute_normalization_image_dataloader(dataloader):
 def train_val_split(dataset, val_split=0.1, batch_size=64):
     val_size = int(len(dataset) * val_split)
     train_size = len(dataset) - val_size
-    trainset, valset = random_split(
-        dataset, [train_size, val_size], generator=torch.Generator().manual_seed(17)
-    )
+    
+    torch.manual_seed(17)
+    trainset, valset = random_split(dataset, [train_size, val_size])
 
     train_loader = DataLoader(trainset, batch_size=batch_size, shuffle=True)
     val_loader = DataLoader(valset, batch_size=batch_size, shuffle=False)
