@@ -1,6 +1,7 @@
 import copy
 
 import torch
+from torch.utils.data import DataLoader
 
 from carotids.metrics import accuracy_torch
 from carotids.utils import train_val_split
@@ -9,6 +10,7 @@ from carotids.utils import train_val_split
 def train_model(
     model,
     train_data,
+    test_data,
     loss,
     optimizer,
     device,
@@ -19,9 +21,13 @@ def train_model(
     losses = {"train": [], "val": []}
     accuracies = {"train": [], "val": []}
 
-    train_loader, train_size, val_loader, val_size = train_val_split(
-        train_data, val_split
-    )
+    #train_loader, train_size, val_loader, val_size = train_val_split(
+    #    train_data, val_split
+    #)
+    train_loader = DataLoader(train_data, batch_size=batch_size, shuffle=True)
+    train_size = len(train_loader)
+    val_loader = DataLoader(test_data, batch_size=batch_size, shuffle=False)
+    val_size = len(val_loader)
 
     best_model = copy.deepcopy(model.state_dict())
     best_loss = 10 ** 8

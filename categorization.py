@@ -110,7 +110,7 @@ def cnn_categorization(model, train_transformations, test_transformations):
     scheduler = lr_scheduler.StepLR(optimizer, step_size=5, gamma=0.5)
 
     model, losses, accuracies = train_model(
-        model, train_dataset, loss, optimizer, device, scheduler
+        model, train_dataset, test_dataset, loss, optimizer, device, scheduler
     )
 
     test_accuracy = accuracy_dataset(test_dataset, model, device)
