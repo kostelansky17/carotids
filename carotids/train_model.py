@@ -24,9 +24,9 @@ def train_model(
     #train_loader, train_size, val_loader, val_size = train_val_split(
     #    train_data, val_split
     #)
-    train_loader = DataLoader(train_data, batch_size=batch_size, shuffle=True)
+    train_loader = DataLoader(train_data, batch_size=64, shuffle=True)
     train_size = len(train_loader)
-    val_loader = DataLoader(test_data, batch_size=batch_size, shuffle=False)
+    val_loader = DataLoader(test_data, batch_size=64, shuffle=False)
     val_size = len(val_loader)
 
     best_model = copy.deepcopy(model.state_dict())
