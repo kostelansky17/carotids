@@ -9,7 +9,9 @@ parts:
 * Localization
 * Segmentation
   
-For each of these segments one can find the codebase defines in particularly named sub-folder and running script in the folder carotids. The reports to each of this tasks are located in the folder reports.
+For each of these segments one can find the codebase defines in particularly 
+named sub-folder of the folder carotids and running script. The reports to each 
+of this tasks are located in the folder reports.
 
 ### Implementation details
 The work is implemented primarily in Python 3.7 and PyTorch 1.6.
