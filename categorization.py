@@ -21,14 +21,14 @@ from carotids.utils import GaussianNoiseTransform
 
 
 TRAIN_IMG_DIRS = {
-    0: "/content/drive/My Drive/cartroids/categorization/train/long",
-    1: "/content/drive/My Drive/cartroids/categorization/train/trav",
-    2: "/content/drive/My Drive/cartroids/categorization/train/diff",
+    0: "/content/drive/My Drive/cartroids/categorization2/train/long",
+    1: "/content/drive/My Drive/cartroids/categorization2/train/trav",
+    2: "/content/drive/My Drive/cartroids/categorization2/train/diff",
 }
 TEST_IMG_DIRS = {
-    0: "/content/drive/My Drive/cartroids/categorization/test/long",
-    1: "/content/drive/My Drive/cartroids/categorization/test/trav",
-    2: "/content/drive/My Drive/cartroids/categorization/test/diff",
+    0: "/content/drive/My Drive/cartroids/categorization2/test/long",
+    1: "/content/drive/My Drive/cartroids/categorization2/test/trav",
+    2: "/content/drive/My Drive/cartroids/categorization2/test/diff",
 }
 CATEGORIES = 3
 COMPLEX_SMALL_TRANSFORMATIONS_TRAIN = transforms.Compose(
@@ -38,7 +38,7 @@ COMPLEX_SMALL_TRANSFORMATIONS_TRAIN = transforms.Compose(
         transforms.Resize((28, 28)),
         transforms.ToTensor(),
         transforms.Normalize([0.1147, 0.1146, 0.1136], [0.0183, 0.0181, 0.0182]),
-        #GaussianNoiseTransform(std=0.001),
+        GaussianNoiseTransform(std=0.001),
     ]
 )
 SIMPLE_SMALL_TRANSFORMATIONS_TRAIN = transforms.Compose(
@@ -62,7 +62,7 @@ COMPLEX_BIG_TRANSFORMATIONS_TRAIN = transforms.Compose(
         transforms.Resize((224, 224)),
         transforms.ToTensor(),
         transforms.Normalize([0.1145, 0.1144, 0.1134], [0.1694, 0.1675, 0.1684]),
-        #GaussianNoiseTransform(std=0.001),
+        GaussianNoiseTransform(std=0.001),
     ]
 )
 SIMPLE_BIG_TRANSFORMATIONS_TRAIN = transforms.Compose(
@@ -107,7 +107,7 @@ def cnn_categorization(model, train_transformations, test_transformations):
 
     loss = nn.CrossEntropyLoss()
     optimizer = SGD(model.parameters(), lr=0.001, momentum=0.9)
-    scheduler = lr_scheduler.StepLR(optimizer, step_size=5, gamma=0.5)
+    scheduler = lr_scheduler.StepLR(optimizer, step_size=5, gamma=0.1)
 
     model, losses, accuracies = train_model(
         model, train_dataset, test_dataset, loss, optimizer, device, scheduler

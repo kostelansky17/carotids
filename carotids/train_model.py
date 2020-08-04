@@ -15,19 +15,15 @@ def train_model(
     optimizer,
     device,
     scheduler=None,
-    val_split=0.1,
-    num_epochs=25,
+    val_split=0.2,
+    num_epochs=75,
 ):
     losses = {"train": [], "val": []}
     accuracies = {"train": [], "val": []}
 
-    #train_loader, train_size, val_loader, val_size = train_val_split(
-    #    train_data, val_split
-    #)
-    train_loader = DataLoader(train_data, batch_size=64, shuffle=True)
-    train_size = len(train_loader)
-    val_loader = DataLoader(test_data, batch_size=64, shuffle=False)
-    val_size = len(val_loader)
+    train_loader, train_size, val_loader, val_size = train_val_split(
+        train_data, val_split
+    )
 
     best_model = copy.deepcopy(model.state_dict())
     best_loss = 10 ** 8
