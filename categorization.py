@@ -186,8 +186,6 @@ def main(args, model_save_path="/content/drive/My Drive/cartroids/"):
             return
 
     elif SIZE == "VGG" or SIZE == "RES50" or SIZE == "RES101":
-        categorization_function = big_cnn_categorization
-
         if SIZE == "VGG":
             categorization_function = big_vgg_categorization
         elif SIZE == "RES50":
