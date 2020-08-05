@@ -167,11 +167,12 @@ def big_res101_categorization(TRANSFORMATIONS_TRAIN):
 
 
 
-def main(args, model_save_path=None):
+def main(args, model_save_path="/content/drive/My Drive/cartroids/"):
     SIZE, TRASFORM = args
 
     categorization_function = None
     transformation_train = None
+    model_save_path = model_save_path + SIZE + "_" + TRASFORM
 
     if SIZE == "SMALL":
         categorization_function = small_cnn_categorization

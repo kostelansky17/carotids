@@ -17,8 +17,9 @@ def accuracy_dataset(dataset, model, device):
     dataloader = DataLoader(dataset, batch_size=64, shuffle=False)
     
     for inputs, labels in dataloader:
-            model.eval()
-
+        model.eval()
+        
+        with torch.no_grad():
             inputs = inputs.to(device)
             labels = labels.to(device)
 
