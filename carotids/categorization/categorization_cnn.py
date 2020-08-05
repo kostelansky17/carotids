@@ -33,7 +33,7 @@ def create_resnet50(categories, pretrained=True, all_layers=True):
     for param in model.parameters():
         param.requires_grad = all_layers
 
-    model.fc = nn.Linear(512, num_classes)
+    model.fc = nn.Linear(512, categories)
 
     return model
 
@@ -44,6 +44,6 @@ def create_resnet101(categories, pretrained=True, all_layers=True):
     for param in model.parameters():
         param.requires_grad = all_layers
 
-    model.fc = nn.Linear(512, num_classes)
+    model.fc = nn.Linear(512, categories)
 
     return model
