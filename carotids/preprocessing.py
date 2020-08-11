@@ -69,9 +69,12 @@ def load_imgs_dir(dir_path):
     return data
 
 
-def load_img(dir_path, img_file):
+def load_img(dir_path, img_file, crop=True):
     joined_path = os.path.join(dir_path, img_file)
     img = Image.open(joined_path)
+
+    if crop:
+        img = crop_image(img)
 
     return img
 
