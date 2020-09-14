@@ -7,7 +7,11 @@ from torch.optim import lr_scheduler, SGD
 from torchvision import transforms
 from torchvision import models, transforms
 
-from carotids.categorization.categorization_cnn import create_small_cnn, create_vgg, create_resnet50, create_resnet101
+from carotids.categorization.categorization_cnn import (
+    create_small_cnn,
+    create_vgg,
+    create_resnet50,
+)
 from carotids.categorization.categorization_dataset import CategorizationDataset
 from carotids.categorization.categorization_linear import (
     create_categorization_features,
@@ -154,19 +158,6 @@ def big_res50_categorization(TRANSFORMATIONS_TRAIN):
     return model, losses, accuracies, test_accuracy
 
 
-def big_res101_categorization(TRANSFORMATIONS_TRAIN):
-    print("RN101 CNN for categorization...")
-
-    model = create_resnet101(CATEGORIES)
-    model, losses, accuracies, test_accuracy = cnn_categorization(
-        model, TRANSFORMATIONS_TRAIN, BIG_TRANSFORMATIONS_TEST
-    )
-
-    print(f"Test accuracy: {test_accuracy}")
-    return model, losses, accuracies, test_accuracy
-
-
-
 def main(args, model_save_path="/content/drive/My Drive/cartroids/"):
     SIZE, TRASFORM = args
 
@@ -185,17 +176,15 @@ def main(args, model_save_path="/content/drive/My Drive/cartroids/"):
             print("Invalid transformation.")
             return
 
-    elif SIZE == "VGG" or SIZE == "RES50" or SIZE == "RES101":
+    elif SIZE == "VGG" or SIZE == "RES50":
         if SIZE == "VGG":
             categorization_function = big_vgg_categorization
         elif SIZE == "RES50":
             categorization_function = big_res50_categorization
-        elif SIZE == "RES101":
-            categorization_function = big_res101_categorization
         else:
             print("Invalid architecture.")
             return
-        
+
         if TRASFORM == "SIMPLE":
             transformation_train = SIMPLE_BIG_TRANSFORMATIONS_TRAIN
         elif TRASFORM == "COMPLEX":
