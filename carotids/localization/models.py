@@ -21,3 +21,5 @@ def create_faster_rcnn(pretrained=False):
     num_classes = 2
     in_features = model.roi_heads.box_predictor.cls_score.in_features
     model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)
+
+    return model
