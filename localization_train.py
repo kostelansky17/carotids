@@ -18,11 +18,13 @@ TEST_IMGS_PATH = "drive/My Drive/cartroids/data/test/img/"
 TEST_LABELS_PATH = "drive/My Drive/cartroids/data/test/txt/"
 
 
-TRANSFORMATIONS = transforms.Compose([
+TRANSFORMATIONS = transforms.Compose(
+    [
         transforms.Resize((224, 224)),
         transforms.ToTensor(),
         transforms.Normalize([0.1323, 0.1323, 0.1323], [0.1621, 0.1621, 0.1621]),
-    ])
+    ]
+)
 
 
 class ModelTypes(Enum):
@@ -31,12 +33,18 @@ class ModelTypes(Enum):
 
 
 def train_renset_localization():
-    train_dataset = ResnetCarotidDataset(TRAIN_IMGS_PATH, TRAIN_LABELS_PATH, TRANSFORMATIONS)
-    val_dataset = ResnetCarotidDataset(VALIDATION_IMGS_PATH, VALIDATION_LABELS_PATH, TRANSFORMATIONS)
-    test_dataset = ResnetCarotidDataset(TEST_IMGS_PATH, TEST_LABELS_PATH, TRANSFORMATIONS)
+    train_dataset = ResnetCarotidDataset(
+        TRAIN_IMGS_PATH, TRAIN_LABELS_PATH, TRANSFORMATIONS
+    )
+    val_dataset = ResnetCarotidDataset(
+        VALIDATION_IMGS_PATH, VALIDATION_LABELS_PATH, TRANSFORMATIONS
+    )
+    test_dataset = ResnetCarotidDataset(
+        TEST_IMGS_PATH, TEST_LABELS_PATH, TRANSFORMATIONS
+    )
 
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    
+
     model = create_resnet_model()
     model = model.to(device)
 
