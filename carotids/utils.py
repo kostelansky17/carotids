@@ -1,3 +1,4 @@
+import numpy as np
 import torch
 from torch.utils.data import DataLoader, random_split
 
@@ -48,7 +49,7 @@ def compute_normalization_image_dataloader(dataloader):
 def train_val_split(dataset, val_split=0.1, batch_size=64):
     val_size = int(len(dataset) * val_split)
     train_size = len(dataset) - val_size
-    
+
     torch.manual_seed(17)
     trainset, valset = random_split(dataset, [train_size, val_size])
 
@@ -56,3 +57,17 @@ def train_val_split(dataset, val_split=0.1, batch_size=64):
     val_loader = DataLoader(valset, batch_size=batch_size, shuffle=False)
 
     return train_loader, train_size, val_loader, val_size
+
+
+def recompute_labels(image, x0, y0, x1, y1, target_size=(244, 244)):
+    if len(np.asarray(image).shape) == 2:
+        img_height, img_width = np.asarray(image).shape
+    else:
+        img_height, img_width, _ = np.asarray(image).shape
+
+    target_height, target_width = target_size
+
+    x0, x1 = x0 * (img_width / target_width), x1 * (img_width / target_width)
+    y0, y1 = y0 * (img_height / target_height), y1 * (img_height / target_height)
+
+    return torch.FloatTensor([x0, y0, x1, y1])
