@@ -71,3 +71,40 @@ def recompute_labels(image, x0, y0, x1, y1, target_size=(244, 244)):
     y0, y1 = y0 * (img_height / target_height), y1 * (img_height / target_height)
 
     return torch.FloatTensor([x0, y0, x1, y1])
+
+
+def generate_boxes(w, h, x1, y1, x2, y2):
+    boxes = []
+
+    for _ in range(7):
+        selection = np.random.randint(0, 4, 1)[0]
+        if selection == 0:
+            xa = np.random.randint(0, x1, 1)[0]
+            ya = np.random.randint(0, h, 1)[0]
+
+            xb = np.random.randint(xa, x1, 1)[0]
+            yb = np.random.randint(ya, h, 1)[0]
+
+        elif selection == 1:
+            xa = np.random.randint(0, w, 1)[0]
+            ya = np.random.randint(y2, h, 1)[0]
+
+            xb = np.random.randint(xa, w, 1)[0]
+            yb = np.random.randint(ya, h, 1)[0]
+
+        elif selection == 2:
+            xa = np.random.randint(x2, w, 1)[0]
+            ya = np.random.randint(0, h, 1)[0]
+
+            xb = np.random.randint(xa, w, 1)[0]
+            yb = np.random.randint(ya, h, 1)[0]
+        else:
+            xa = np.random.randint(0, w, 1)[0]
+            ya = np.random.randint(0, y1, 1)[0]
+
+            xb = np.random.randint(xa, w, 1)[0]
+            yb = np.random.randint(ya, y1, 1)[0]
+
+        boxes.append([xa, ya, xb, yb])
+
+    return boxes
