@@ -28,19 +28,7 @@ def create_vgg(categories, pretrained=True, all_layers=True):
 
 
 def create_resnet50(categories, pretrained=True, all_layers=True):
-    model =  models.resnet50(pretrained=pretrained)
-
-    for param in model.parameters():
-        param.requires_grad = all_layers
-
-    in_features = model.fc.in_features
-    model.fc = nn.Linear(in_features, categories)
-
-    return model
-
-
-def create_resnet101(categories, pretrained=True, all_layers=True):
-    model =  models.resnet101(pretrained=pretrained)
+    model = models.resnet50(pretrained=pretrained)
 
     for param in model.parameters():
         param.requires_grad = all_layers
