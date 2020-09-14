@@ -4,10 +4,9 @@ import torch
 from torch.utils.data.dataset import Dataset
 
 from carotids.preprocessing import load_img, load_position
-from carotids.utils import recompute_labels
 
 
-class ResnetCarotidDataset(Dataset):
+class FastCarotidDataset(Dataset):
     def __init__(self, imgs_path, labels_path, transformations):
         self.data_path = imgs_path
         self.labels_path = labels_path
@@ -18,11 +17,23 @@ class ResnetCarotidDataset(Dataset):
         self.transformations = transformations
 
     def __getitem__(self, index):
+        print(self.data_files[index])
         img = load_img(self.data_path, self.data_files[index])
-        x0, y0, x1, y1 = load_position(self.labels_path, self.labels_files[index])
-        label_tensor = recompute_labels(img, x0, y0, x1, y1)
+        label = load_position(self.labels_path, self.labels_files[index])
 
-        return self.transformations(img).double(), label_tensor.double()
+        boxes = [label]
+        boxes = torch.as_tensor([label], dtype=torch.int64)
+
+        area = (boxes[:, 3] - boxes[:, 1]) * (boxes[:, 2] - boxes[:, 0])
+
+        label = {
+            "boxes": boxes,
+            "labels": torch.tensor([1], dtype=torch.int64),
+            "image_id": torch.tensor([index], dtype=torch.int64),
+            "area": area,
+        }
+
+        return self.transformations(img), label
 
     def __len__(self):
         return len(self.data_files)
