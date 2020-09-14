@@ -1,3 +1,9 @@
+# models
+models/*
+
+# results
+results/*
+
 # latex
 latexs/*
 
