@@ -2,6 +2,7 @@ import numpy as np
 import torch
 from torch.utils.data import DataLoader
 
+
 def accuracy_torch(output, label):
     _, predicted = torch.max(output.data, 1)
 
@@ -15,19 +16,18 @@ def accuracy_np(output, label):
 def accuracy_dataset(dataset, model, device):
     accuracy = 0.0
     dataloader = DataLoader(dataset, batch_size=64, shuffle=False)
-    
+
     for inputs, labels in dataloader:
         model.eval()
-        
+
         with torch.no_grad():
             inputs = inputs.to(device)
             labels = labels.to(device)
 
-            outputs = model(inputs)        
+            outputs = model(inputs)
             accuracy += accuracy_torch(outputs, labels) * inputs.size(0)
-    
-    return accuracy / len(dataset)
 
+    return accuracy / len(dataset)
 
 
 def iou(labels, outputs, treshold):
@@ -60,7 +60,7 @@ def iou(labels, outputs, treshold):
     return correct
 
 
-def evaluate_dataset_iou(model, dataset, device):
+def evaluate_dataset_iou_frcnn(model, dataset, device):
     model.eval()
     s = 0
     for inputs, label in dataset:
@@ -72,4 +72,18 @@ def evaluate_dataset_iou(model, dataset, device):
         inputs = label["boxes"]
         s += iou(inputs.int(), prediction.int(), 0.85)
 
-    print(f"Validation: {s/len(dataset)}")
+    return s / len(dataset)
+
+
+def evaluate_dataset_iou_resnet(model, dataset, device):
+    model.eval()
+    loader = DataLoader(dataset, batch_size=8, shuffle=False)
+
+    s = 0
+    for inputs, labels in loader:
+        with torch.no_grad():
+            output = model(inputs.to(device)).cpu()
+
+        s += iou(labels.int(), output.int(), 0.85)
+
+    return s / len(dataset)
