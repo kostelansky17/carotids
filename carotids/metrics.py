@@ -60,19 +60,28 @@ def iou(labels, outputs, treshold):
     return correct
 
 
-def evaluate_dataset_iou_frcnn(model, dataset, device):
+@torch.no_grad()
+def evaluate_dataset_iou_frcnn(model, data_loader, device):
+    acc = 0
     model.eval()
-    s = 0
-    for inputs, label in dataset:
+    for images, targets in data_loader:
+        images = list(img.to(device) for img in images)
 
-        with torch.no_grad():
-            prediction = model([inputs.to(device)])
+        outputs = model(images)
 
-        prediction = prediction[0]["boxes"]
-        inputs = label["boxes"]
-        s += iou(inputs.int(), prediction.int(), 0.85)
+        outputs = [{k: v.to("cpu") for k, v in t.items()} for t in outputs]
+        
+        if len(outputs[0]["boxes"]):
+            acc += iou(targets[0]["boxes"][0].unsqueeze(0).int(), 
+                      outputs[0]["boxes"][0].unsqueeze(0).int(), .6)
+        
+        if len(outputs) > 1:
+            if len(outputs[1]["boxes"]):
+                acc += iou(targets[1]["boxes"][0].unsqueeze(0).int(), 
+                          outputs[1]["boxes"][0].unsqueeze(0).int(), .6)
+      
 
-    return s / len(dataset)
+    return acc
 
 
 def evaluate_dataset_iou_resnet(model, dataset, device):
