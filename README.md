@@ -27,6 +27,14 @@ For localization, the training of the compared model is shown in file
 **localization_train.py** and later usage of the best selected model in
  **localization_use.py**.
 
+## Trained models
+
+The best models for both tasks covered so far (categorization and localization),
+as defined in corresponding reports are free to download from  
+[Google Drive](https://drive.google.com/drive/folders/1gRT2sJv0F5efB3eZsnWPdG_CpzvjUcYS?usp=sharing).
+The simple use case with sample data can be found in this repository as well
+(use cases in files categorization_use.py and localization_use.py, samples in folder data_samples).
+
 ## Implementation details
 
 The work is implemented primarily in **Python 3.7** and **PyTorch 1.6**. The 
