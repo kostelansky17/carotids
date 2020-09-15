@@ -16,8 +16,8 @@ TRANSFORMATIONS = transforms.Compose(
     ]
 )
 
-PATH_TO_MODEL = ""
-PATH_TO_DATA = ""
+PATH_TO_DATA = "/home/martin/Documents/cartroids/data_samples/categorization_samples/"
+PATH_TO_MODEL = "/home/martin/Documents/cartroids/models/categorization_model.pth"
 
 
 def categorization_example_use():

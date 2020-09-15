@@ -70,16 +70,21 @@ def evaluate_dataset_iou_frcnn(model, data_loader, device):
         outputs = model(images)
 
         outputs = [{k: v.to("cpu") for k, v in t.items()} for t in outputs]
-        
+
         if len(outputs[0]["boxes"]):
-            acc += iou(targets[0]["boxes"][0].unsqueeze(0).int(), 
-                      outputs[0]["boxes"][0].unsqueeze(0).int(), .6)
-        
+            acc += iou(
+                targets[0]["boxes"][0].unsqueeze(0).int(),
+                outputs[0]["boxes"][0].unsqueeze(0).int(),
+                0.6,
+            )
+
         if len(outputs) > 1:
             if len(outputs[1]["boxes"]):
-                acc += iou(targets[1]["boxes"][0].unsqueeze(0).int(), 
-                          outputs[1]["boxes"][0].unsqueeze(0).int(), .6)
-      
+                acc += iou(
+                    targets[1]["boxes"][0].unsqueeze(0).int(),
+                    outputs[1]["boxes"][0].unsqueeze(0).int(),
+                    0.6,
+                )
 
     return acc
 
