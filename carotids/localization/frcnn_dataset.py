@@ -37,3 +37,18 @@ class FastCarotidDataset(Dataset):
 
     def __len__(self):
         return len(self.data_files)
+
+
+class FastCarotidDatasetEval(Dataset):
+    def __init__(self, imgs_path, transformations):
+        self.data_path = imgs_path
+        self.data_files = sorted(os.listdir(imgs_path))
+        self.transformations = transformations
+        
+    def __getitem__(self, index):
+        img = load_img(self.data_path, self.data_files[index])
+
+        return self.transformations(img), self.data_files[index]
+        
+    def __len__(self):
+        return len(self.data_files)
