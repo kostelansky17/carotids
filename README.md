@@ -29,6 +29,7 @@ For localization, the training of the compared model is shown in file
 
 ## Implementation details
 
-The work is implemented primarily in **Python 3.7** and **PyTorch 1.6**.
+The work is implemented primarily in **Python 3.7** and **PyTorch 1.6**. The 
+PyTorch version needs to be met to load the models properly.
 
 Created by Martin Kostelansky in 2020.
