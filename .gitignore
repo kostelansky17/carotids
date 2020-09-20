@@ -15,6 +15,7 @@ latexs/*
 
 # Data
 data/*
+new_data/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
