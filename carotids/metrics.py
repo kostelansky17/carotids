@@ -1,36 +1,81 @@
-import numpy as np
-import torch
+from torch import device, tensor
+from torch import max as torch_max
+from torch.nn import Module
 from torch.utils.data import DataLoader
+from torch.utils.data.dataset import Dataset
 
 
-def accuracy_torch(output, label):
-    _, predicted = torch.max(output.data, 1)
+def accuracy_torch(output: tensor, label: tensor) -> float:
+    """Computes accuracy of a model's output.
+
+    Parameters
+    ----------
+    output : tensor
+        Probabilities predicted by a model.
+    label : tensor
+        True labels.
+    
+    Returns
+    -------
+    float
+        Accuracy of predictions.
+    """
+    _, predicted = torch_max(output.data, 1)
 
     return (predicted == label).sum().item() / len(label)
 
 
-def accuracy_np(output, label):
-    return np.mean(output == label)
+@torch.no_grad()
+def accuracy_dataset(dataset: Dataset, model: Module, device: device) -> float:
+    """Computes accuracy of a model on a given dataset.
 
+    Parameters
+    ----------
+    dataset : Dataset
+        Dataset to evaluate model on.
+    model : Module
+        Model to evaluate.
+    device : device
+        Device on which is the model.
 
-def accuracy_dataset(dataset, model, device):
+    Returns
+    -------
+    float
+        Accuracy of a model on a dataset.
+    """
     accuracy = 0.0
     dataloader = DataLoader(dataset, batch_size=64, shuffle=False)
 
     for inputs, labels in dataloader:
         model.eval()
 
-        with torch.no_grad():
-            inputs = inputs.to(device)
-            labels = labels.to(device)
+        inputs = inputs.to(device)
+        labels = labels.to(device)
 
-            outputs = model(inputs)
-            accuracy += accuracy_torch(outputs, labels) * inputs.size(0)
+        outputs = model(inputs)
+        accuracy += accuracy_torch(outputs, labels) * inputs.size(0)
 
     return accuracy / len(dataset)
 
 
-def iou(labels, outputs, treshold):
+def iou(labels: tensor, outputs: tensor, treshold: float) -> int:
+    """Computes a number of predictions with IoU highier than the treshold
+    against true bounding boxes.
+
+    Parameters
+    ----------
+    labels : tensor
+        True bounding boxes.
+    outputs : tensor
+        Predicted bounding boxes.
+    treshold : float
+        Treshold for IoU.
+
+    Returns
+    -------
+    int
+        Number of predictions with IoU highier than a treshold.
+    """
     size = len(labels)
 
     correct = 0
@@ -61,43 +106,94 @@ def iou(labels, outputs, treshold):
 
 
 @torch.no_grad()
-def evaluate_dataset_iou_frcnn(model, data_loader, device):
+def evaluate_dataset_iou_frcnn(
+    model: Module, data_loader: DataLoader, device: device, treshold: float = 0.85
+) -> tuple:
+    """Computes a number of predictions of a Faster R-CNNmodel on a dataloader 
+    with IoU highier than the treshold, and number of images on which is found
+    zero predicted objects, one predicted object or many predicted object. 
+
+    Parameters
+    ----------
+    model : Module
+        Model to be evaluated.
+    data_loader : DataLoader
+        Dataloader to evaluate the model on.
+    device : device
+        Device on which is the model.
+    treshold : float
+        Treshold for IoU.
+
+    Returns
+    -------
+    tuple
+        Number of predictions with IoU highier than a treshold, number of images 
+        on which is found zero predicted objects, one predicted object and many 
+        predicted object.
+    """
+    zero_predictions = 0
+    one_prediction = 0
+    many_predictions = 0
     acc = 0
+
     model.eval()
+
     for images, targets in data_loader:
         images = list(img.to(device) for img in images)
 
         outputs = model(images)
 
         outputs = [{k: v.to("cpu") for k, v in t.items()} for t in outputs]
-
-        if len(outputs[0]["boxes"]):
-            acc += iou(
-                targets[0]["boxes"][0].unsqueeze(0).int(),
-                outputs[0]["boxes"][0].unsqueeze(0).int(),
-                0.6,
-            )
-
-        if len(outputs) > 1:
-            if len(outputs[1]["boxes"]):
+        for i in range(len(outputs)):
+            if len(outputs[i]["boxes"]) > 0:
+                many_predictions += 1
                 acc += iou(
-                    targets[1]["boxes"][0].unsqueeze(0).int(),
-                    outputs[1]["boxes"][0].unsqueeze(0).int(),
-                    0.6,
+                    targets[i]["boxes"][0].unsqueeze(0),
+                    outputs[i]["boxes"][0].unsqueeze(0),
+                    treshold,
                 )
+            elif len(outputs[i]["boxes"]) == 1:
+                one_prediction += 1
+                acc += iou(
+                    targets[i]["boxes"][0].unsqueeze(0),
+                    outputs[i]["boxes"][0].unsqueeze(0),
+                    treshold,
+                )
+            else:
+                zero_predictions += 1
 
-    return acc
+    return acc, zero_predictions, one_prediction, many_predictions
 
 
-def evaluate_dataset_iou_resnet(model, dataset, device):
+@torch.no_grad()
+def evaluate_dataset_iou_resnet(
+    model: Module, dataset: Dataset, device: device, treshold: float = 0.85
+) -> float:
+    """Computes a number of predictions of a ResNet on a dataset with IoU 
+    highier than the treshold. 
+
+    Parameters
+    ----------
+    model : Module
+        Model to be evaluated.
+    dataset : Dataset
+        Dataset to evaluate the model on.
+    device : device
+        Device on which is the model.
+    treshold : float
+        Treshold for IoU.
+
+    Returns
+    -------
+    int
+        Percentage of predictions with IoU highier than a treshold.
+    """
+    data_loader = DataLoader(dataset, batch_size=8, shuffle=False)
     model.eval()
-    loader = DataLoader(dataset, batch_size=8, shuffle=False)
 
     s = 0
-    for inputs, labels in loader:
-        with torch.no_grad():
-            output = model(inputs.to(device)).cpu()
-
+    for inputs, labels in data_loader:
+        output = model(inputs.to(device)).cpu()
         s += iou(labels.int(), output.int(), 0.85)
 
     return s / len(dataset)
