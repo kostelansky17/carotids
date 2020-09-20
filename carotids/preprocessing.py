@@ -1,4 +1,5 @@
-import os
+from os import listdir
+from os.path import join
 
 from numpy import array, asarray, loadtxt
 from PIL import Image
@@ -45,7 +46,7 @@ def load_position(dir_path: str, label_file: str) -> array:
     array
         Position of an object defined by a bounding box.
     """
-    label = loadtxt(os.path.join(dir_path, label_file), delimiter=";")
+    label = loadtxt(join(dir_path, label_file), delimiter=";")
 
     transformed_label = asarray(
         [
@@ -73,8 +74,8 @@ def load_imgs_dir(dir_path: str) -> list:
         List of PIL Images.
     """
     data = []
-    for file in sorted(os.listdir(dir_path)):
-        file_path = os.path.join(dir_path, file)
+    for file in sorted(listdir(dir_path)):
+        file_path = join(dir_path, file)
         img = Image.open(file_path)
         data.append(img)
 
@@ -98,7 +99,7 @@ def load_img(dir_path: str, img_file: str, crop: bool = True) -> Image:
     Image
         Loaded Image.
     """
-    joined_path = os.path.join(dir_path, img_file)
+    joined_path = join(dir_path, img_file)
     img = Image.open(joined_path)
 
     if crop:
