@@ -1,14 +1,7 @@
 import os
 
-import numpy as np
+from numpy import array, asarray, loadtxt
 from PIL import Image
-
-
-COLOR_MAX = 255
-
-PATH_LONG = "/home/martin/Documents/cartroids/data/categorization/test/praha_long"
-PATH_TRAV = "/home/martin/Documents/cartroids/data/categorization/test/praha_trav"
-PATH_DIFF = "/home/martin/Documents/cartroids/data/categorization/test/praha_diff"
 
 CROP_BIG = (221, 171, 791, 740)
 CROP_SMALL = (181, 141, 831, 750)
@@ -16,17 +9,19 @@ SIZE_BIG = (1200, 900)
 SIZE_SMALL = (1200, 870)
 
 
-def load_dir(dir_path, crop=False):
-    data = []
-    for file in sorted(os.listdir(dir_path)):
-        file_path = os.path.join(dir_path, file)
-        img = convert_img_to_feature(file_path, crop)
-        data.append(img)
+def crop_image(img: Image) -> Image:
+    """Crops an image if its size matches ones of Prague dataset images.
 
-    return np.vstack(data)
-
-
-def crop_image(img):
+    Parameters
+    ----------
+    img : Image
+        Image to be processed.
+    
+    Returns
+    -------
+    Image
+        Processed image.
+    """
     if img.size == SIZE_BIG:
         img = img.crop(CROP_BIG)
     elif img.size == SIZE_SMALL:
@@ -35,19 +30,24 @@ def crop_image(img):
     return img
 
 
-def convert_img_to_feature(img_path, crop=False):
-    img = Image.open(img_path).convert("LA")
-    if crop:
-        img = crop_image(img)
+def load_position(dir_path: str, label_file: str) -> array:
+    """Loads position of an object from a file.
 
-    img = img.resize((50, 50))
-    return np.asarray(img)[:, :, 0].flatten() / COLOR_MAX
+    Parameters
+    ----------
+    dir_path : str
+        Folder of the file.
+    label_file : str
+        File name.
+    
+    Returns
+    -------
+    array
+        Position of an object defined by a bounding box.
+    """
+    label = loadtxt(os.path.join(dir_path, label_file), delimiter=";")
 
-
-def load_position(dir_path, label_file):
-    label = np.loadtxt(os.path.join(dir_path, label_file), delimiter=";")
-
-    transformed_label = np.asarray(
+    transformed_label = asarray(
         [
             label[0] - label[2] / 2,
             label[1] - label[3] / 2,
@@ -59,7 +59,19 @@ def load_position(dir_path, label_file):
     return transformed_label
 
 
-def load_imgs_dir(dir_path):
+def load_imgs_dir(dir_path: str) -> list:
+    """Loads images from a directory.
+
+    Parameters
+    ----------
+    dir_path : str
+        Folder containing images to load.
+ 
+    Returns
+    -------
+    list
+        List of PIL Images.
+    """
     data = []
     for file in sorted(os.listdir(dir_path)):
         file_path = os.path.join(dir_path, file)
@@ -69,7 +81,23 @@ def load_imgs_dir(dir_path):
     return data
 
 
-def load_img(dir_path, img_file, crop=True):
+def load_img(dir_path: str, img_file: str, crop: bool = True) -> Image:
+    """Loads an images.
+
+    Parameters
+    ----------
+    dir_path : str
+        Folder containing images to load.
+    img_file : str
+        File name.
+    crop : bool
+        Flag describing if an image should be cropped.
+
+    Returns
+    -------
+    Image
+        Loaded Image.
+    """
     joined_path = os.path.join(dir_path, img_file)
     img = Image.open(joined_path)
 
@@ -77,17 +105,3 @@ def load_img(dir_path, img_file, crop=True):
         img = crop_image(img)
 
     return img
-
-
-def normalize_data(X_train, X_test=None):
-    train_mean = np.mean(X_train)
-    train_std = np.mean(X_train)
-
-    X_train = (X_train - train_mean) / train_std
-
-    if X_test is not None:
-        X_test = (X_test - train_mean) / train_std
-
-        return X_train, X_test
-
-    return X_train
