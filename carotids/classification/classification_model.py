@@ -14,7 +14,7 @@ class ClassificationModel(Module):
 
 
     def forward(self):
-        """Returns a length of the dataset.
+        """.
 
         Parameters
         ----------
