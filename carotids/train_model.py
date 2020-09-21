@@ -1,23 +1,54 @@
-import copy
+from copy import deepcopy
+from typing import Union
 
-import torch
+from torch import device, Optimizer
+from torch.nn import Module
+from torch.nn.modules.loss import _Loss
+from torch.optim.lr_scheduler import _LRScheduler
 from torch.utils.data import DataLoader
+from torch.utils.data.dataset import Dataset
 
 from carotids.metrics import accuracy_torch
 from carotids.utils import train_val_split
 
 
 def train_model(
-    model,
-    train_data,
-    test_data,
-    loss,
-    optimizer,
-    device,
-    scheduler=None,
-    val_split=0.2,
-    num_epochs=75,
-):
+    model: Module,
+    train_data: Dataset,
+    loss: _Loss,
+    optimizer: Optimizer,
+    device: device,
+    scheduler: Union[None, _LRScheduler] = None,
+    val_split: float = 0.2,
+    num_epochs: int = 75,
+) -> tuple:
+    """Trains the model on the training data.
+
+    Parameters
+    ----------
+    model : Module
+        Model to train.
+    train_data : Dataset
+        Train data.
+    loss : _Loss
+        Loss function.
+    optimizer : Optimizer
+        Selected optimizer which updates weights of the model
+    device : device
+        Device on which is the model.
+    scheduler : Union[None, _LRScheduler]
+        Selected scheduler of the learning rate.
+    val_split : float
+        Ratio of the train-validation split.
+    num_epochs : int
+        Number of training epochs.
+
+    Returns
+    -------
+    tuple
+        Model with best loss and the loss and accuracy metrics from observed
+        during the training.
+    """
     losses = {"train": [], "val": []}
     accuracies = {"train": [], "val": []}
 
@@ -71,7 +102,7 @@ def train_model(
 
         if val_epoch_loss < best_loss:
             best_loss = val_epoch_loss
-            best_model = copy.deepcopy(model.state_dict())
+            best_model = deepcopy(model.state_dict())
 
         losses["train"].append(train_epoch_loss / train_size)
         losses["val"].append(val_epoch_loss / val_size)
