@@ -1,11 +1,11 @@
-import os
+from os import listdir
 
-import torch
-import torch.nn as nn
+from torch import load
+from torch.nn import Softmax
 from torchvision import transforms
 
+from carotids.categorization.models import create_resnet50
 from carotids.preprocessing import load_img
-from carotids.categorization.categorization_cnn import create_resnet50
 
 CATEGORIES = 3
 TRANSFORMATIONS = transforms.Compose(
@@ -16,17 +16,22 @@ TRANSFORMATIONS = transforms.Compose(
     ]
 )
 
-PATH_TO_DATA = "/home/martin/Documents/cartroids/data_samples/categorization_samples/"
-PATH_TO_MODEL = "/home/martin/Documents/cartroids/models/categorization_model.pth"
+PATH_TO_DATA = "FILL_ME"
+PATH_TO_MODEL = "FILL_ME"
 
 
-def categorization_example_use():
+def categorization_example_use() -> None:
+    """Example usage of categorization model. Load model from path selected by 
+    parameter PATH_TO_MODEL. Evaluates the images in the folder specified by 
+    the PATH_TO_DATA parameter. Prints name of the file and probabilities for
+    each class.
+    """
     model = create_resnet50(CATEGORIES)
-    model.load_state_dict(torch.load(PATH_TO_MODEL))
+    model.load_state_dict(load(PATH_TO_MODEL))
     model.eval()
 
-    image_names = os.listdir(PATH_TO_DATA)
-    softmax = nn.Softmax(dim=1)
+    image_names = listdir(PATH_TO_DATA)
+    softmax = Softmax(dim=1)
 
     for image_name in image_names:
         img = load_img(PATH_TO_DATA, image_name)
