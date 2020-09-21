@@ -2,17 +2,17 @@ from os import listdir
 
 from torch import load
 from torch.nn import Softmax
-from torchvision import transforms
+from torchvision.transforms import Compose, Normalize, Resize, ToTensor
 
-from carotids.categorization.models import create_resnet50
 from carotids.preprocessing import load_img
+from carotids.categorization.models import create_resnet50
 
 CATEGORIES = 3
-TRANSFORMATIONS = transforms.Compose(
+TRANSFORMATIONS = Compose(
     [
-        transforms.Resize((224, 224)),
-        transforms.ToTensor(),
-        transforms.Normalize([0.1145, 0.1144, 0.1134], [0.1694, 0.1675, 0.1684]),
+        Resize((224, 224)),
+        ToTensor(),
+        Normalize([0.1145, 0.1144, 0.1134], [0.1694, 0.1675, 0.1684]),
     ]
 )
 
