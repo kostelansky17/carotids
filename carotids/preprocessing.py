@@ -4,10 +4,8 @@ from os.path import join
 from numpy import array, asarray, loadtxt
 from PIL import Image
 
-CROP_BIG = (221, 171, 791, 740)
-CROP_SMALL = (181, 141, 831, 750)
-SIZE_BIG = (1200, 900)
-SIZE_SMALL = (1200, 870)
+CROP = (221, 120,791,719)
+SIZE = (1200, 850)
 
 
 def crop_image(img: Image) -> Image:
@@ -23,10 +21,8 @@ def crop_image(img: Image) -> Image:
     Image
         Processed image.
     """
-    if img.size == SIZE_BIG:
-        img = img.crop(CROP_BIG)
-    elif img.size == SIZE_SMALL:
-        img = img.crop(CROP_SMALL)
+    if img.size == SIZE:
+        img = img.crop(CROP)
 
     return img
 
