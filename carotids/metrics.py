@@ -1,6 +1,7 @@
-from torch import device, tensor
+from torch import device, no_grad, tensor
 from torch import max as torch_max
 from torch.nn import Module
+from torch.nn.modules.loss import _Loss
 from torch.utils.data import DataLoader
 from torch.utils.data.dataset import Dataset
 
@@ -25,7 +26,7 @@ def accuracy_torch(output: tensor, label: tensor) -> float:
     return (predicted == label).sum().item() / len(label)
 
 
-@torch.no_grad()
+@no_grad()
 def accuracy_dataset(dataset: Dataset, model: Module, device: device) -> float:
     """Computes accuracy of a model on a given dataset.
 
@@ -56,6 +57,50 @@ def accuracy_dataset(dataset: Dataset, model: Module, device: device) -> float:
         accuracy += accuracy_torch(outputs, labels) * inputs.size(0)
 
     return accuracy / len(dataset)
+
+
+from torch import no_grad
+
+
+@no_grad()
+def evaluate_model_categorization(
+    model: Module, dataloader: DataLoader, loss: _Loss, device: device
+) -> tuple:
+    """Computes accuracy of a model on a given dataset.
+
+    Parameters
+    ----------
+    model : Module
+        Model to evaluate.
+    dataloader : DataLoader
+        Dataloader to evaluate model on.
+    loss : _Loss
+        A loss function to use.
+    device : device
+        Device on which is the model.
+
+    Returns
+    -------
+    tuple
+        Mean loss and accuracy of a model on a dataloader.
+    """
+    model.eval()
+    model_loss = 0.0
+    model_acc = 0
+
+    data_size = len(dataloader.dataset)
+
+    for inputs, labels in dataloader:
+        inputs = inputs.to(device)
+        labels = labels.to(device)
+
+        outputs = model(inputs)
+        l = loss(outputs, labels)
+
+        model_loss += l.item() * inputs.size(0)
+        model_acc += accuracy_torch(outputs, labels) * inputs.size(0)
+
+    return model_loss / data_size, model_acc / data_size
 
 
 def iou(labels: tensor, outputs: tensor, treshold: float) -> int:
@@ -105,7 +150,7 @@ def iou(labels: tensor, outputs: tensor, treshold: float) -> int:
     return correct
 
 
-@torch.no_grad()
+@no_grad()
 def evaluate_dataset_iou_frcnn(
     model: Module, data_loader: DataLoader, device: device, treshold: float = 0.85
 ) -> tuple:
@@ -165,7 +210,7 @@ def evaluate_dataset_iou_frcnn(
     return acc, zero_predictions, one_prediction, many_predictions
 
 
-@torch.no_grad()
+@no_grad()
 def evaluate_dataset_iou_resnet(
     model: Module, dataset: Dataset, device: device, treshold: float = 0.85
 ) -> float:
