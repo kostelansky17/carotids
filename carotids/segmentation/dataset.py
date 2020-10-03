@@ -1,12 +1,12 @@
 from torch.utils.data.dataset import Dataset
 
 
-class ClassificationDataset(Dataset):
-    """Represents a dateset used for classification.
+class SegmentationDataset(Dataset):
+    """Represents a dateset used for segmentation.
     """
 
     def __init__(self) -> None:
-        """Initializes a classification dataset.
+        """Initializes a segmentation dataset.
 
         Parameters
         ----------

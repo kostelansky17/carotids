@@ -1,11 +1,11 @@
 from torch.nn import Module
 
 
-class ClassificationModel(Module):
-    """Represents a classification model.
+class Unet(Module):
+    """Represents a segmentation model.
     """
     def __init__(self) -> None:
-        """Initializes a classification model.
+        """Initializes a segmentation model.
 
         Parameters
         ----------
