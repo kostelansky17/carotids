@@ -3,6 +3,7 @@ models/*
 
 # results
 results/*
+results_new/*
 
 # latex
 latexs/*
