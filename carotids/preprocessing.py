@@ -4,7 +4,7 @@ from os.path import join
 from numpy import array, asarray, loadtxt
 from PIL import Image
 
-CROP = (221, 120,791,719)
+CROP = (221, 120, 791, 719)
 SIZE = (1200, 850)
 
 
