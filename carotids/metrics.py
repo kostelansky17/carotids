@@ -59,14 +59,11 @@ def accuracy_dataset(dataset: Dataset, model: Module, device: device) -> float:
     return accuracy / len(dataset)
 
 
-from torch import no_grad
-
-
 @no_grad()
 def evaluate_model_categorization(
     model: Module, dataloader: DataLoader, loss: _Loss, device: device
 ) -> tuple:
-    """Computes accuracy of a model on a given dataset.
+    """Computes loss and accuracy of a model on a given dataloader.
 
     Parameters
     ----------
