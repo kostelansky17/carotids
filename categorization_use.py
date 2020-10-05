@@ -17,8 +17,8 @@ TRANSFORMATIONS = Compose(
     ]
 )
 
-PATH_TO_DATA = "/home/martin/Documents/cartroids/data_samples/categorization_samples/"
-PATH_TO_MODEL = "/home/martin/Documents/cartroids/new_data/vgg_cat"
+PATH_TO_DATA = "FILL_ME"
+PATH_TO_MODEL = "FILL_ME"
 
 
 @no_grad()
