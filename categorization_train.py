@@ -15,21 +15,9 @@ from carotids.train_model import train_model
 from carotids.utils import GaussianNoiseTransform
 
 
-TRAIN_IMG_DIRS = {
-    0: "FILL_ME",
-    1: "FILL_ME",
-    2: "FILL_ME",
-}
-VAL_IMG_DIRS = {
-    0: "FILL_ME",
-    1: "FILL_ME",
-    2: "FILL_ME",
-}
-TEST_IMG_DIRS = {
-    0: "FILL_ME",
-    1: "FILL_ME",
-    2: "FILL_ME",
-}
+TRAIN_IMG_DIRS = {0: "FILL_ME", 1: "FILL_ME", 2: "FILL_ME"}
+VAL_IMG_DIRS = {0: "FILL_ME", 1: "FILL_ME", 2: "FILL_ME"}
+TEST_IMG_DIRS = {0: "FILL_ME", 1: "FILL_ME", 2: "FILL_ME"}
 CATEGORIES = 3
 
 TRANSFORMATIONS = transforms.Compose(
@@ -43,7 +31,7 @@ TRANSFORMATIONS = transforms.Compose(
 
 def main():
     train_dataset = CategorizationDataset(TRAIN_IMG_DIRS, TRANSFORMATIONS)
-    val_dataset =  CategorizationDataset(VAL_IMG_DIRS, TRANSFORMATIONS)
+    val_dataset = CategorizationDataset(VAL_IMG_DIRS, TRANSFORMATIONS)
     test_dataset = CategorizationDataset(TEST_IMG_DIRS, TRANSFORMATIONS)
 
     train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
@@ -62,7 +50,7 @@ def main():
     model, losses, accuracies = train_model(
         model, train_loader, val_loader, loss, optimizer, device, scheduler, 100
     )
-    
+
     torch.save(model.state_dict(), "categorization_model.pth")
 
 

@@ -1,13 +1,14 @@
 from os import listdir
 
-from torch import load
+from torch import device, load, no_grad
 from torch.nn import Softmax
 from torchvision.transforms import Compose, Normalize, Resize, ToTensor
 
 from carotids.preprocessing import load_img
-from carotids.categorization.models import create_resnet50
+from carotids.categorization.models import create_vgg
 
 CATEGORIES = 3
+DEVICE = device("cpu")
 TRANSFORMATIONS = Compose(
     [
         Resize((224, 224)),
@@ -16,18 +17,20 @@ TRANSFORMATIONS = Compose(
     ]
 )
 
-PATH_TO_DATA = "FILL_ME"
-PATH_TO_MODEL = "FILL_ME"
+PATH_TO_DATA = "/home/martin/Documents/cartroids/data_samples/categorization_samples/"
+PATH_TO_MODEL = "/home/martin/Documents/cartroids/new_data/vgg_cat"
 
 
+@no_grad()
 def categorization_example_use() -> None:
     """Example usage of categorization model. Load model from path selected by 
     parameter PATH_TO_MODEL. Evaluates the images in the folder specified by 
     the PATH_TO_DATA parameter. Prints name of the file and probabilities for
     each class.
     """
-    model = create_resnet50(CATEGORIES)
-    model.load_state_dict(load(PATH_TO_MODEL))
+    model = create_vgg(CATEGORIES)
+    model.load_state_dict(load(PATH_TO_MODEL, map_location=DEVICE))
+    model.to(DEVICE)
     model.eval()
 
     image_names = listdir(PATH_TO_DATA)
@@ -36,6 +39,8 @@ def categorization_example_use() -> None:
     for image_name in image_names:
         img = load_img(PATH_TO_DATA, image_name)
         img_tensor = TRANSFORMATIONS(img)
+        img_tensor = img_tensor.to(DEVICE)
+
         predictions = model(img_tensor.unsqueeze(0))
         probabs = softmax(predictions)
         print(
