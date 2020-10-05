@@ -1,18 +1,13 @@
-import sys
-
-import numpy as np
 import torch
 from torch.nn import CrossEntropyLoss
 from torch.optim import SGD
 from torch.optim.lr_scheduler import MultiStepLR
 from torch.utils.data import DataLoader
-from torchvision import models, transforms
+from torchvision import transforms
 
 from carotids.categorization.models import create_vgg
 from carotids.categorization.dataset import CategorizationDataset
-from carotids.metrics import accuracy_dataset
 from carotids.train_model import train_model
-from carotids.utils import GaussianNoiseTransform
 
 
 TRAIN_IMG_DIRS = {0: "FILL_ME", 1: "FILL_ME", 2: "FILL_ME"}
@@ -30,6 +25,9 @@ TRANSFORMATIONS = transforms.Compose(
 
 
 def main():
+    """The approach which has been used for training best categorization model
+    as defined and described in the given report.
+    """
     train_dataset = CategorizationDataset(TRAIN_IMG_DIRS, TRANSFORMATIONS)
     val_dataset = CategorizationDataset(VAL_IMG_DIRS, TRANSFORMATIONS)
     test_dataset = CategorizationDataset(TEST_IMG_DIRS, TRANSFORMATIONS)
