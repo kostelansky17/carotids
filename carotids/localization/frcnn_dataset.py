@@ -3,6 +3,7 @@ from os import listdir
 from torch import as_tensor, int64, tensor
 from torch.utils.data.dataset import Dataset
 
+from carotids.localization.transformations import transform_item
 from carotids.preprocessing import load_img, load_position
 
 
@@ -13,7 +14,13 @@ class FastCarotidDataset(Dataset):
     gotten.
     """
 
-    def __init__(self, data_path: str, labels_path: str, transformations: list) -> None:
+    def __init__(
+        self,
+        data_path: str,
+        labels_path: str,
+        transformations_custom: list,
+        transformations_torch: list,
+    ) -> None:
         """Initializes a training Faster R-CNN dataset.
 
         Parameters
@@ -22,8 +29,10 @@ class FastCarotidDataset(Dataset):
             Path to a folder containing the images.
         labels_path:str
             Path to a folder containing the files with labels.
-        transformations : list
-            List of transformations used to preprocess the image inputs.
+        transformations_custom : list
+            List of custom transformations used to preprocess the image inputs.
+        transformations_torch : list
+            List of torch transformations used to preprocess the image inputs.
         """
         self.data_path = data_path
         self.labels_path = labels_path
@@ -31,7 +40,8 @@ class FastCarotidDataset(Dataset):
         self.data_files = sorted(listdir(data_path))
         self.labels_files = sorted(listdir(labels_path))
 
-        self.transformations = transformations
+        self.transformations_custom = transformations_custom
+        self.transformations_torch = transformations_torch
 
     def __getitem__(self, index: int) -> tuple:
         """Gets item from the dataset at a specified index.
@@ -50,6 +60,8 @@ class FastCarotidDataset(Dataset):
         img = load_img(self.data_path, self.data_files[index])
         label = load_position(self.labels_path, self.labels_files[index])
 
+        img, label = transform_item(img, label, self.transformations_custom)
+
         boxes = [label]
         boxes = as_tensor([label], dtype=int64)
 
@@ -62,7 +74,7 @@ class FastCarotidDataset(Dataset):
             "area": area,
         }
 
-        return self.transformations(img), label
+        return self.transformations_torch(img), label
 
     def __len__(self) -> int:
         """Returns a length of the dataset.
