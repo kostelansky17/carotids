@@ -23,23 +23,23 @@ def load_coco_labels(labels_path: str) -> dict:
         Dictionary with labels, key is the image file name and values are 
         dictionaries with data needed in training.
     """
-    with open(COCO) as coco_file:
+    with open(labels_path) as coco_file:
         coco_data = load(coco_file)
 
     labels = {}
-    number_of_labels = lencoco_data
+    images = coco_data["images"]
+    annotations = coco_data["annotations"]
 
-    for i in range(number_of_labels):
-        file_name = coco_data["images"][i]["file_name"]
-        data = coco_data["annotations"][i]
+    for annotation in annotations:
+        file_name = images[annotation["image_id"] - 1]["file_name"]
 
         boxes = [
             asarray(
                 [
-                    data["bbox"][0],
-                    data["bbox"][1],
-                    data["bbox"][0] + data["bbox"][2],
-                    data["bbox"][1] + data["bbox"][3],
+                    annotation["bbox"][0],
+                    annotation["bbox"][1],
+                    annotation["bbox"][0] + annotation["bbox"][2],
+                    annotation["bbox"][1] + annotation["bbox"][3],
                 ]
             )
         ]
@@ -47,8 +47,8 @@ def load_coco_labels(labels_path: str) -> dict:
         labels[file_name] = {
             "boxes": boxes,
             "labels": tensor([1], dtype=int64),
-            "image_id": tensor([data["id"]], dtype=int64),
-            "area": data["area"],
+            "image_id": tensor([annotation["image_id"]], dtype=int64),
+            "area": annotation["area"],
         }
 
     return labels
@@ -158,7 +158,7 @@ class FastCarotidDatasetPrague(Dataset):
         self.labels_path = labels_path
 
         self.data_files = sorted(listdir(data_path))
-        self.labels_path = listdir(labels_path)
+        self.labels_path = labels_path
         self.labels = load_coco_labels(self.labels_path)
 
         self.transformations = transformations
@@ -178,9 +178,9 @@ class FastCarotidDatasetPrague(Dataset):
             bounding boxes, labels, id of the image and objects' areas.
         """
         img = load_img(self.data_path, self.data_files[index])
-        label = self.labels(self.data_files[index])
+        label = self.labels[self.data_files[index]]
 
-        return self.transformations_torch(img), label
+        return self.transformations(img), label
 
     def __len__(self) -> int:
         """Returns a length of the dataset.
