@@ -5,7 +5,7 @@ from torch.nn import Softmax
 from torchvision.transforms import Compose, Normalize, Resize, ToTensor
 
 from carotids.preprocessing import load_img
-from carotids.categorization.models import create_vgg
+from carotids.categorization.models import create_resnet50
 
 CATEGORIES = 3
 DEVICE = device("cpu")
@@ -13,7 +13,7 @@ TRANSFORMATIONS = Compose(
     [
         Resize((224, 224)),
         ToTensor(),
-        Normalize([0.1145, 0.1144, 0.1134], [0.1694, 0.1675, 0.1684]),
+        Normalize([0.1257, 0.1267, 0.1278], [0.1528, 0.1537, 0.1551]),
     ]
 )
 
@@ -28,7 +28,7 @@ def categorization_example_use() -> None:
     the PATH_TO_DATA parameter. Prints name of the file and probabilities for
     each class.
     """
-    model = create_vgg(CATEGORIES)
+    model = create_resnet50(CATEGORIES)
     model.load_state_dict(load(PATH_TO_MODEL, map_location=DEVICE))
     model.to(DEVICE)
     model.eval()
