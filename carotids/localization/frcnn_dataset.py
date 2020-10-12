@@ -4,8 +4,9 @@ from os import listdir
 from numpy import asarray
 from torch import as_tensor, int64, tensor
 from torch.utils.data.dataset import Dataset
+from torchvision.transforms import Compose
 
-from carotids.localization.transformations import transform_item
+from carotids.localization.transformations import LocCompose
 from carotids.preprocessing import load_img, load_position
 
 
@@ -65,8 +66,8 @@ class FastCarotidDatasetBrno(Dataset):
         self,
         data_path: str,
         labels_path: str,
-        transformations_custom: list,
-        transformations_torch: list,
+        transformations_custom: Compose,
+        transformations_torch: LocCompose,
     ) -> None:
         """Initializes a training Faster R-CNN dataset.
 
@@ -76,9 +77,9 @@ class FastCarotidDatasetBrno(Dataset):
             Path to a folder containing the images.
         labels_path:str
             Path to a folder containing the files with labels.
-        transformations_custom : list
+        transformations_custom : Compose
             List of custom transformations used to preprocess the image inputs.
-        transformations_torch : list
+        transformations_torch : LocCompose
             List of torch transformations used to preprocess the image inputs.
         """
         self.data_path = data_path
@@ -107,7 +108,7 @@ class FastCarotidDatasetBrno(Dataset):
         img = load_img(self.data_path, self.data_files[index])
         label = load_position(self.labels_path, self.labels_files[index])
 
-        img, label = transform_item(img, label, self.transformations_custom)
+        img, label = self.transformations_custom(img, label)
 
         boxes = [label]
         boxes = as_tensor([label], dtype=int64)
@@ -142,7 +143,9 @@ class FastCarotidDatasetPrague(Dataset):
     is initialized.
     """
 
-    def __init__(self, data_path: str, labels_path: str, transformations: list) -> None:
+    def __init__(
+        self, data_path: str, labels_path: str, transformations: Compose
+    ) -> None:
         """Initializes a training Faster R-CNN dataset.
 
         Parameters
@@ -151,7 +154,7 @@ class FastCarotidDatasetPrague(Dataset):
             Path to a folder containing the images.
         labels_path:str
             Path to a JSON file containing the COCO labels.
-        transformations : list
+        transformations : Compose
             List of torch transformations used to preprocess the image inputs.
         """
         self.data_path = data_path
@@ -201,14 +204,14 @@ class FastCarotidDatasetEval(Dataset):
     gotten.
     """
 
-    def __init__(self, data_path: int, transformations: list) -> None:
+    def __init__(self, data_path: int, transformations: Compose) -> None:
         """Initializes a training Faster R-CNN dataset.
 
         Parameters
         ----------
         data_path : str
             Path to a folder containing the images.
-        transformations : list
+        transformations : Compose
             List of transformations used to preprocess the image inputs.
         """
         self.data_path = data_path
