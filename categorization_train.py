@@ -3,11 +3,19 @@ from torch.nn import CrossEntropyLoss
 from torch.optim import SGD
 from torch.optim.lr_scheduler import MultiStepLR
 from torch.utils.data import DataLoader
-from torchvision import transforms
+from torchvision.transforms import (
+    Compose,
+    Normalize,
+    RandomHorizontalFlip,
+    RandomVerticalFlip,
+    Resize,
+    ToTensor,
+)
 
 from carotids.categorization.models import create_vgg
 from carotids.categorization.dataset import CategorizationDataset
 from carotids.train_model import train_model
+from carotids.utils import GaussianNoiseTransform
 
 
 TRAIN_IMG_DIRS = {0: "FILL_ME", 1: "FILL_ME", 2: "FILL_ME"}
@@ -15,7 +23,7 @@ VAL_IMG_DIRS = {0: "FILL_ME", 1: "FILL_ME", 2: "FILL_ME"}
 TEST_IMG_DIRS = {0: "FILL_ME", 1: "FILL_ME", 2: "FILL_ME"}
 CATEGORIES = 3
 
-TRANSFORMATIONS_TRAIN = transforms.Compose(
+TRANSFORMATIONS_TRAIN = Compose(
     [
         RandomHorizontalFlip(),
         RandomVerticalFlip(),
@@ -25,7 +33,7 @@ TRANSFORMATIONS_TRAIN = transforms.Compose(
         GaussianNoiseTransform(std=0.001),
     ]
 )
-TRANSFORMATIONS_TEST = transforms.Compose(
+TRANSFORMATIONS_TEST = Compose(
     [
         Resize((224, 224)),
         ToTensor(),
