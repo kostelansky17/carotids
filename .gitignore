@@ -1,3 +1,20 @@
+latex/*
+!latex/kostema3.bib
+!latex/kostema3.bbl
+!latex/kostema3.tex
+!latex/kostema3_practical.tex
+!latex/kostema3_teoretical.tex
+!latex/ctuthesis.cls
+!latex/ctuth-core.tex
+!latex/ctuth-names.tex
+!latex/ctuth-pkg.tex
+!latex/ctuth-templates.tex
+!latex/ctu_logo_black.pdf
+!latex/ctu_logo_blue.pdf
+!latex/ctuthesis.ist
+!latex/zadanie.pdf
+
+
 # models
 models/*
 
