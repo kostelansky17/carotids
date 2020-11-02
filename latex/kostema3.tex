@@ -131,11 +131,51 @@ To write.
 
 \chapter{Convolutional neural net}
 Convolutional neural nets are a family of neural nets, which use a convolutional layer.
-Usually they take as an input
+Usually they take as an input grid structured data \cite{DL_BOOK}, typicaly images, for example
+ one may see as 3D tensor, one dimension for each primary color in RGB encoding. But from their
+ first pracical use in reading check system \cite{CHECKS}, they have been applied in many 
+ domains, not only necessarily image processing. They have been used in text processing, for
+ example in anlayzing sentiment of a text \cite{SENTIMENT_CNN}, time series classification 
+\cite{TS_CNN} or in the field of recommender systems \cite{REC_CNN}. Its main component is a
+convolutional layer, which is often combinied a pooling layer. One may find convolutional 
+networks combined with fully-connected or even LSTM layers \cite{LSTM_CNN}.
+
+
+\section{Convolutional layer}
+The cornerstone of each convolutional neural net is a convolutional layer. In this layer, 
+one or multiple convolutional filters are applied on the layer's input. 
+
+\section{Pooling layer}
+
+\subsection{Average-pooling}
+
+
+\subsection{Max-pooling}
+
+
+\section{Fully-connected layer}
+
+
+\section{Training}
+
 
 
 \chapter{Implementation details}
-To write.
+The project was implemented in programing language Python \cite{Python}, version 3.7.
+For using, creating and training neural network is used deep learning library PyTorch\cite{PyTorch}.
+
+
+
+\section{Project structure}
+The project is divided into three main parts: classification, localization and segmentation.
+Code share between them is stored in the root directory. For each part there files which create
+models, datasets and may contain some additional funcionality, for example data data augmentation.
+The complete structure can be seen on figure #TODO.
+
+\section{Examples}
+For every part there is an example script which traines sample model on specified dataset. For
+every type of model there is a script with example usage as well as samle data on which these 
+models can be ran. All of the examples scripts can be found the the root directory.
 
 \printindex
 
