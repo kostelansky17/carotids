@@ -1,3 +1,4 @@
+\newcommand{\etalchar}[1]{$^{#1}$}
 \providecommand{\bysame}{\leavevmode\hbox to3em{\hrulefill}\thinspace}
 \providecommand{\MR}{\relax\ifhmode\unskip\space\fi MR }
 % \MRhref is called by the amsart/book/proc definition of \MR.
@@ -5,6 +6,81 @@
   \href{http://www.ams.org/mathscinet-getitem?mr=#1}{#2}
 }
 \providecommand{\href}[2]{#2}
-\begin{thebibliography}{}
+\begin{thebibliography}{KMDC18}
+
+\bibitem[dSG14]{SENTIMENT_CNN}
+C{\'\i}cero dos Santos and Ma{\'\i}ra Gatti, \emph{Deep convolutional neural
+  networks for sentiment analysis of short texts}, Proceedings of {COLING}
+  2014, the 25th International Conference on Computational Linguistics:
+  Technical Papers (Dublin, Ireland), Dublin City University and Association
+  for Computational Linguistics, August 2014, pp.~69--78.
+
+\bibitem[GB10]{HardDnn}
+Xavier Glorot and Y.~Bengio, \emph{Understanding the difficulty of training
+  deep feedforward neural networks}, Journal of Machine Learning Research -
+  Proceedings Track \textbf{9} (2010), 249--256.
+
+\bibitem[GBC16]{DL_BOOK}
+Ian Goodfellow, Yoshua Bengio, and Aaron Courville, \emph{Deep learning}, MIT
+  Press, 2016, \url{http://www.deeplearningbook.org}.
+
+\bibitem[HZRS15]{ResNet}
+Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun, \emph{Deep residual
+  learning for image recognition}, 2015.
+
+\bibitem[IN214]{IN2014}
+\emph{Large scale visual recognition challenge 2014 (ilsvrc2014)}, 2014.
+
+\bibitem[KMDC18]{LSTM_CNN}
+F.~{Karim}, S.~{Majumdar}, H.~{Darabi}, and S.~{Chen}, \emph{Lstm fully
+  convolutional networks for time series classification}, IEEE Access
+  \textbf{6} (2018), 1662--1669.
+
+\bibitem[KPO{\etalchar{+}}16]{REC_CNN}
+Donghyun Kim, Chanyoung Park, Jinoh Oh, Sungyoung Lee, and Hwanjo Yu,
+  \emph{Convolutional matrix factorization for document context-aware
+  recommendation}, Proceedings of the 10th ACM Conference on Recommender
+  Systems (New York, NY, USA), RecSys '16, Association for Computing Machinery,
+  2016, p.~233–240.
+
+\bibitem[KSH12]{AlexNet}
+Alex Krizhevsky, Ilya Sutskever, and Geoffrey~E Hinton, \emph{Imagenet
+  classification with deep convolutional neural networks}, Advances in Neural
+  Information Processing Systems 25 (F.~Pereira, C.~J.~C. Burges, L.~Bottou,
+  and K.~Q. Weinberger, eds.), Curran Associates, Inc., 2012, pp.~1097--1105.
+
+\bibitem[PGM{\etalchar{+}}19]{PyTorch}
+Adam Paszke, Sam Gross, Francisco Massa, Adam Lerer, James Bradbury, Gregory
+  Chanan, Trevor Killeen, Zeming Lin, Natalia Gimelshein, Luca Antiga, Alban
+  Desmaison, Andreas Kopf, Edward Yang, Zachary DeVito, Martin Raison, Alykhan
+  Tejani, Sasank Chilamkurthy, Benoit Steiner, Lu~Fang, Junjie Bai, and Soumith
+  Chintala, \emph{Pytorch: An imperative style, high-performance deep learning
+  library}, Advances in Neural Information Processing Systems 32 (H.~Wallach,
+  H.~Larochelle, A.~Beygelzimer, F.~d\textquotesingle Alch\'{e}-Buc, E.~Fox,
+  and R.~Garnett, eds.), Curran Associates, Inc., 2019, pp.~8024--8035.
+
+\bibitem[RDS{\etalchar{+}}15]{russakovsky2015imagenet}
+Olga Russakovsky, Jia Deng, Hao Su, Jonathan Krause, Sanjeev Satheesh, Sean Ma,
+  Zhiheng Huang, Andrej Karpathy, Aditya Khosla, Michael Bernstein,
+  Alexander~C. Berg, and Li~Fei-Fei, \emph{Imagenet large scale visual
+  recognition challenge}, 2015.
+
+\bibitem[SZ15]{VGG}
+Karen Simonyan and Andrew Zisserman, \emph{Very deep convolutional networks for
+  large-scale image recognition}, 2015.
+
+\bibitem[VRD09]{Python}
+Guido Van~Rossum and Fred~L. Drake, \emph{Python 3 reference manual},
+  CreateSpace, Scotts Valley, CA, 2009.
+
+\bibitem[YBB97]{CHECKS}
+{Yann Le Cun}, L.~{Bottou}, and Y.~{Bengio}, \emph{Reading checks with
+  multilayer graph transformer networks}, 1997 IEEE International Conference on
+  Acoustics, Speech, and Signal Processing, vol.~1, 1997, pp.~151--154 vol.1.
+
+\bibitem[ZLC{\etalchar{+}}17]{TS_CNN}
+B.~{Zhao}, H.~{Lu}, S.~{Chen}, J.~{Liu}, and D.~{Wu}, \emph{Convolutional
+  neural networks for time series classification}, Journal of Systems
+  Engineering and Electronics \textbf{28} (2017), no.~1, 162--169.
 
 \end{thebibliography}

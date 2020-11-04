@@ -1,0 +1,105 @@
+
+%!TEX ROOT=ctutest.tex
+
+\chapter{Goals and objectives}
+The aim of this work is to create a collection of machine learning models, which
+will be used in both, further research and image processing pipeline. The first
+goal is to create a model which would be able to categorize different types of
+ultrasound images, namely transversal, longitudinal and doppler ones. Further, 
+we need to localize the common carotid artery (respectively internal carotid artery)
+on the images of the first two named categories. As a last step, we need to
+design a segmentation model which would segment three particular parts of
+an artery with stenosis - vessel, lumen and plaque. Since all of these steps
+in processing are interconnected and the outputs of one model are fed into a 
+next one, all of the proposed methods need to achieve sufficient performance.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Background}
+
+\section{Carotid Artery Stenosis}
+To write.
+
+\section{Medical ultrasound}
+In general, medical ultrasound is a technique using sound waves in range etc.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Existing methods}
+
+\section{Classification}
+Image classification is one of the primary tasks in the field od image processing.
+The neural network have achieved breakthrough in this field, namely ones using
+convolutional layers. Later, as in many other domains, the deep learning has 
+become state of the art in this field. One of the benchmark for this task is ImageNet 
+Large Scale Visual Recognition Challenge \cite{russakovsky2015imagenet}, which has begun in 2010.
+The task is to crate a model able to classify over 1.4 million images into one thousand 
+categories. The size of the annotated dataset with the reduction of training time achieved by using GPU led
+to deep architectures \cite{AlexNet}.
+
+
+\subsection{Image classification in medicine}
+
+
+\subsection{VGG}
+Very deep convolutional neural networks for large-scale image recognition \cite{VGG} were 
+introduced in 2014, and it achieved both, first and second class in the Classification tracks of 
+ImageNet Challenge \cite{IN2014}.
+
+
+\subsubsection{Architecture}
+Six architectures were introduced in the experiments, each containing six blocks of convolutional
+layers separated by max-pooling ones. In the convolutional layers were used filters with
+with size 3x3 (in one experiment were used filters with size 1x1 at the end of three convolutional blocks).
+With the 3x3 convolutional filters is used stride 1 with zero padding, so the spatial dimensionality
+is preserved trough whole block. In the max-pooling layer, a receptor field with size 2x2 is used and with stride 1 it 
+reduces the dimensionality to half. Finally, there are three fully-connected layers. First two with 4096 neurons and
+the last one with 1000 neuron followed by sigmoid activation function. The two best performing models with 16, respectively 19
+layers are described by Figure TODO.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\subsection{ResNet}
+The deep neural networks are generally harder to train \cite{HardDnn}. In 2015 was proposed ResNet\cite{ResNet}, 
+a deep residual convolutional network. The depth of the networks was pushed even further, up to 152 layers. 
+
+
+\subsubsection{Architecture}
+To write.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\section{Localization}
+To write.
+
+\subsection{Faster R-CNN}
+To write.
+
+\subsubsection{Architecture}
+To write.
+
+\subsubsection{Applications}
+To write.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\section{Segmentation}
+To write.
+
+\subsection{U-net}
+To write.
+
+\subsubsection{Architecture}
+To write.
+
+\subsubsection{Applications}
+To write.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
