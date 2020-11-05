@@ -15,6 +15,13 @@ next one, all of the proposed methods need to achieve sufficient performance.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\chapter{Introduction}
+To write.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
 \chapter{Background}
 
 \section{Carotid Artery Stenosis}
@@ -28,8 +35,9 @@ In general, medical ultrasound is a technique using sound waves in range etc.
 
 \chapter{Existing methods}
 
-\section{Classification}
+\section{Image Classification}
 Image classification is one of the primary tasks in the field od image processing.
+Its goal is to assing to an image one of predefined categories.
 The neural network have achieved breakthrough in this field, namely ones using
 convolutional layers. Later, as in many other domains, the deep learning has 
 become state of the art in this field. One of the benchmark for this task is ImageNet 
@@ -38,14 +46,17 @@ The task is to crate a model able to classify over 1.4 million images into one t
 categories. The size of the annotated dataset with the reduction of training time achieved by using GPU led
 to deep architectures \cite{AlexNet}.
 
-
-\subsection{Image classification in medicine}
+After inital successes of deep convolutional neural networks, they have been widely used
+applied in many fields, inculuding medical and biology image processing. For example to 
+predict breast cancer based on histopathological images \cite{BreastCNN}, to classify
+lung pattern for interstitial lung diseases \cite{LungCNN} or to detect and classify
+abnormalities on frontal chest radiographs \cite{ChestCNN}.
 
 
 \subsection{VGG}
 Very deep convolutional neural networks for large-scale image recognition \cite{VGG} were 
 introduced in 2014, and it achieved both, first and second class in the Classification tracks of 
-ImageNet Challenge \cite{IN2014}.
+ImageNet Challenge \cite{IN2014} in the same year.
 
 
 \subsubsection{Architecture}
@@ -65,25 +76,48 @@ layers are described by Figure TODO.
 \subsection{ResNet}
 The deep neural networks are generally harder to train \cite{HardDnn}. In 2015 was proposed ResNet\cite{ResNet}, 
 a deep residual convolutional network. The depth of the networks was pushed even further, up to 152 layers. 
-
+This combination resulted in the first place in the Categorization track of ImageNet Challenge 2015\cite{IN2015}
+(ResNet models can be found under MSRA team name).
 
 \subsubsection{Architecture}
-To write.
+The architectures of ResNet followes principles introduced in VGG, and uses mostly convolutional
+layers with 3x3 filters, in some versions combined with 1x1 filters. ResNet takes an input of
+size 224x224 pixels, which can be translated into 224x224x3 matrix. This input is than processed
+by convolutional layer with filter size 7x7 and stride 2, which results in reduction of the 
+dimension by two - to 112x112. The output of first layer is fed into only max-pooling layer,
+with receptor filed 3x3 and stride 2. The following convolutional part is composed from four
+blocks of convolutional layers, which structure varies by the specific network's version.
+The dimensionality between convolutional blocks is reduced by increasing stride to two
+in the first convolutional layer of a block, instead of using max-pooling, which is used in VGG.
+Nerwork contains only on fully-connected layer, which is at the end and is followed by 
+soft-max axtivation function, which translates the neorons' output to probabilities of the
+one thousand categories.
+
+
+\subsubsubsection{Residual learning}
+The layes trough the neworks are not only connected with the previous ones, but 
+they are connected with the residual connections as well. These shourtcuts help to
+train such deep network and are based on the assumtion, that a network with these
+connections should be able to fit the data as well as the shallower network without them.
+TODO add images and describe deeply, add equations. 
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-\section{Localization}
+\section{Object Localization}
+Object localization can be defined as a task to localize objects on an image. Usualy
+by surounding each one with a rectange TODO fig lara.
+
+\section{From R-CNN to Faster R-CNN}
 To write.
+
 
 \subsection{Faster R-CNN}
 To write.
 
 \subsubsection{Architecture}
-To write.
-
-\subsubsection{Applications}
 To write.
 
 
