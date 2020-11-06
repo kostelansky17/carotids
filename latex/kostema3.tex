@@ -29,7 +29,6 @@
 	fieldofstudy-czech = {Otevřená informatika},
 	subfieldofstudy-czech = {Umělá inteligence},
 	keywords-czech = {slovo, klíč},
-	keywords-czech = {slovo, klíč},
 	keywords-english = {word, key},
 	day = 5,
 	month = 1,
@@ -118,23 +117,15 @@ In Prague, \ctufield{day}.~\monthinlanguage{title}~\ctufield{year}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \chapter{Introduction}
-Artificial inteligence is a science field which aims to build intelligententities
-and understand the principles behind it \cite{AIMA_book}.
-
-
-
-
-Machine learning is without a doubt one of the leading science fields, and its 
-results are getting an interest outside the academic world. Intelligent solutions
-using AI are taking a place in today's society. From virtual voice assistants, 
-translators to autonomus cars. It is not only influecing our daily lives,
-but the another science fields as well. Machine learning can be helpfull
-tool practicaly everywhere, where are data. 
-
-Human's percetiom of the world commes from multiple senses. In case of machines,
-this connection needs to be created by engeneering. BUt raw images are meaningless
-to a computer. To process such input.
-
+Artificial inteligence is a science field which aims to build intelligent systems
+and understand the principles behind it \cite{AIMAbook}. Most of the researches
+assumes that ability to learn is a predisposition for intelligence. \cite{KONONENKO200189}
+Machine learning is a subfield of AI, which focuses on learning a behavior from data.
+The rise of deep learning, an area of machine learning which focuses on deep neural networks,
+started around 2010, when this models outperformed algorithm based methods. 
+Since than, deep learning has been applied in a wide range of applications, 
+from natural language processing, finance, image processing or medical diagnosis.
+SOMETHING ABOUT APPLICATION DL IN MEDICNE - GENELRALY!
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -161,23 +152,41 @@ Usually they take as an input grid structured data \cite{DL_BOOK}, typicaly imag
  domains, not only necessarily image processing. They have been used in text processing, for
  example in anlayzing sentiment of a text \cite{SENTIMENT_CNN}, time series classification 
 \cite{TS_CNN} or in the field of recommender systems \cite{REC_CNN}. Its main component is a
-convolutional layer, which is often combinied a pooling layer. One may find convolutional 
+convolutional layer, which is often combined a pooling layer. One may find convolutional 
 networks combined with fully-connected or even LSTM layers \cite{LSTM_CNN}.
 
 
 \section{Convolutional layer}
 The cornerstone of each convolutional neural net is a convolutional layer. In this layer, 
-one or multiple convolutional filters are applied on the layer's input. 
+one or multiple convolutional filters are applied on the layer's input.  Each of the filters
+is relatively small and it is continuously applied over the input. 
+
+\begin{equation} 
+	Y_{i,j}=\sigma(b+\sum_{k=0}^{x}\sum_{l=0}^{y}w_{k,l}a_{i+k,j+l}),
+\end{equation} 
 
 \section{Pooling layer}
+The pooling layers 
 
 \subsection{Average-pooling}
+\begin{equation} 
+	Y_{i,j}=\frac{1}{xy}\sum_{k=0}^{x}\sum_{l=0}^{y}w_{k,l}a_{i+k,j+l},
+\end{equation} 
 
 
 \subsection{Max-pooling}
 
+\begin{equation} 
+	Y_{i,j} = \max_{(p,q)\in{\Re_{i,j}}}(x_{p,q}),
+\end{equation} 
+
 
 \section{Fully-connected layer}
+To write.
+
+
+\section{Architecture}
+To write.
 
 
 \section{Training}
@@ -187,7 +196,7 @@ one or multiple convolutional filters are applied on the layer's input.
 \chapter{Implementation details}
 The project was implemented in programing language Python \cite{Python}, version 3.7.
 For using, creating and training neural network is used deep learning library PyTorch\cite{PyTorch}.
-Code documentation is following numpy docstring guide, and it is formatted by Black code 
+Code documentation is following numpy docstring guide \cite{NP}, and it is formatted by Black code 
 formater \cite{Black}
 
 
@@ -201,6 +210,10 @@ The complete structure can be seen on figure TODO.
 For every part there is an example script which traines sample model on specified dataset. For
 every type of model there is a script with example usage as well as samle data on which these 
 models can be ran. All of the examples scripts can be found the the root directory.
+
+
+\chapter{List of abbreviations}
+To write.
 
 \printindex
 
