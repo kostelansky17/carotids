@@ -50,7 +50,6 @@
     address = {New York, NY, USA},
     url = {https://doi.org/10.1145/2959100.2959165},
     doi = {10.1145/2959100.2959165},
-    abstract = {Sparseness of user-to-item rating data is one of the major factors that deteriorate the quality of recommender system. To handle the sparsity problem, several recommendation techniques have been proposed that additionally consider auxiliary information to improve rating prediction accuracy. In particular, when rating data is sparse, document modeling-based approaches have improved the accuracy by additionally utilizing textual data such as reviews, abstracts, or synopses. However, due to the inherent limitation of the bag-of-words model, they have difficulties in effectively utilizing contextual information of the documents, which leads to shallow understanding of the documents. This paper proposes a novel context-aware recommendation model, convolutional matrix factorization (ConvMF) that integrates convolutional neural network (CNN) into probabilistic matrix factorization (PMF). Consequently, ConvMF captures contextual information of documents and further enhances the rating prediction accuracy. Our extensive evaluations on three real-world datasets show that ConvMF significantly outperforms the state-of-the-art recommendation models even when the rating data is extremely sparse. We also demonstrate that ConvMF successfully captures subtle contextual difference of a word in a document. Our implementation and datasets are available at http://dm.postech.ac.kr/ConvMF.},
     booktitle = {Proceedings of the 10th ACM Conference on Recommender Systems},
     pages = {233–240},
     numpages = {8},
@@ -229,16 +228,67 @@
 }
 
 @article{KONONENKO200189,
-title = "Machine learning for medical diagnosis: history, state of the art and perspective",
-journal = "Artificial Intelligence in Medicine",
-volume = "23",
-number = "1",
-pages = "89 - 109",
-year = "2001",
-issn = "0933-3657",
-doi = "https://doi.org/10.1016/S0933-3657(01)00077-X",
-url = "http://www.sciencedirect.com/science/article/pii/S093336570100077X",
-author = "Igor Kononenko",
-keywords = "Machine learning, Medical diagnosis, Reliability of prediction, Kirlian camera",
-abstract = "The paper provides an overview of the development of intelligent data analysis in medicine from a machine learning perspective: a historical view, a state-of-the-art view, and a view on some future trends in this subfield of applied artificial intelligence. The paper is not intended to provide a comprehensive overview but rather describes some subareas and directions which from my personal point of view seem to be important for applying machine learning in medical diagnosis. In the historical overview, I emphasize the naive Bayesian classifier, neural networks and decision trees. I present a comparison of some state-of-the-art systems, representatives from each branch of machine learning, when applied to several medical diagnostic tasks. The future trends are illustrated by two case studies. The first describes a recently developed method for dealing with reliability of decisions of classifiers, which seems to be promising for intelligent data analysis in medicine. The second describes an approach to using machine learning in order to verify some unexplained phenomena from complementary medicine, which is not (yet) approved by the orthodox medical community but could in the future play an important role in overall medical diagnosis and treatment."
+    title = "Machine learning for medical diagnosis: history, state of the art and perspective",
+    journal = "Artificial Intelligence in Medicine",
+    volume = "23",
+    number = "1",
+    pages = "89 - 109",
+    year = "2001",
+    issn = "0933-3657",
+    doi = "https://doi.org/10.1016/S0933-3657(01)00077-X",
+    url = "http://www.sciencedirect.com/science/article/pii/S093336570100077X",
+    author = "Igor Kononenko",
+    keywords = "Machine learning, Medical diagnosis, Reliability of prediction, Kirlian camera",
+    abstract = "The paper provides an overview of the development of intelligent data analysis in medicine from a machine learning perspective: a historical view, a state-of-the-art view, and a view on some future trends in this subfield of applied artificial intelligence. The paper is not intended to provide a comprehensive overview but rather describes some subareas and directions which from my personal point of view seem to be important for applying machine learning in medical diagnosis. In the historical overview, I emphasize the naive Bayesian classifier, neural networks and decision trees. I present a comparison of some state-of-the-art systems, representatives from each branch of machine learning, when applied to several medical diagnostic tasks. The future trends are illustrated by two case studies. The first describes a recently developed method for dealing with reliability of decisions of classifiers, which seems to be promising for intelligent data analysis in medicine. The second describes an approach to using machine learning in order to verify some unexplained phenomena from complementary medicine, which is not (yet) approved by the orthodox medical community but could in the future play an important role in overall medical diagnosis and treatment."
+}
+
+@article{CNNREW,
+    author = {Rawat, Waseem and Wang, Zenghui},
+    title = {Deep Convolutional Neural Networks for Image Classification: A Comprehensive Review},
+    journal = {Neural Computation},
+    volume = {29},
+    number = {9},
+    pages = {2352-2449},
+    year = {2017},
+    doi = {10.1162/neco\_a\_00990},
+    note ={PMID: 28599112},
+    URL = {https://doi.org/10.1162/neco_a_00990},
+    eprint = {https://doi.org/10.1162/neco_a_00990}
+}
+@misc{mikolov2013efficient,
+    title={Efficient Estimation of Word Representations in Vector Space}, 
+    author={Tomas Mikolov and Kai Chen and Greg Corrado and Jeffrey Dean},
+    year={2013},
+    eprint={1301.3781},
+    archivePrefix={arXiv},
+    primaryClass={cs.CL}
+}
+
+@inproceedings{Ding2015DeepLF,
+    title={Deep Learning for Event-Driven Stock Prediction},
+    author={Xiao Ding and Yue Zhang and T. Liu and Junwen Duan},
+    booktitle={IJCAI},
+    year={2015}
+}
+
+@INPROCEEDINGS{6868045,
+    author={S. {Liu} and S. {Liu} and W. {Cai} and S. {Pujol} and R. {Kikinis} and D. {Feng}},
+    booktitle={2014 IEEE 11th International Symposium on Biomedical Imaging (ISBI)}, 
+    title={Early diagnosis of Alzheimer's disease with deep learning}, 
+    year={2014},
+    volume={},
+    number={},
+    pages={1015-1018},
+    doi={10.1109/ISBI.2014.6868045}
+}
+
+@book{hastie2009elements,
+  title={The Elements of Statistical Learning: Data Mining, Inference, and Prediction},
+  author={Hastie, T. and Tibshirani, R. and Friedman, J.H.},
+  isbn={9780387848846},
+  lccn={2008941148},
+  series={Springer series in statistics},
+  url={https://books.google.sk/books?id=eBSgoAEACAAJ},
+  year={2009},
+  publisher={Springer}
 }

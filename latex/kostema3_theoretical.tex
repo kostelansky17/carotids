@@ -94,6 +94,9 @@ The layes trough the neworks are not only connected with the previous ones, but
 they are connected with the residual connections as well. These shourtcuts help to
 train such deep network and are based on the assumtion, that a network with these
 connections should be able to fit the data as well as the shallower network without them.
+The connections forwards the flow in the network, where it is added to the values 
+transfromed by multiple layers.
+
 TODO add images and describe deeply, add equations. 
 
 
@@ -102,11 +105,15 @@ TODO add images and describe deeply, add equations.
 
 
 \section{Object Localization}
-Object localization can be defined as a task to localize objects on an image. Usually
-by surounding each one with a rectange TODO fig lara.
+Object localization can be defined as a task to localize an object on an image. Usually
+by surounding each one with a rectange TODO fig lara. It is simplification of more
+complex task - object detection, which goal is to detect all objects of proposed categories
+on an image. 
 
-\section{From R-CNN to Faster R-CNN}
+\section{Faster R-CNN}
 To write.
+
+\subsection{Region Proposal Networks}
 
 
 \subsection{Faster R-CNN}

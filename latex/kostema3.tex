@@ -28,8 +28,8 @@
 	subfieldofstudy-english = {Artificial Intelligence},
 	fieldofstudy-czech = {Otevřená informatika},
 	subfieldofstudy-czech = {Umělá inteligence},
-	keywords-czech = {slovo, klíč},
-	keywords-english = {word, key},
+	keywords-czech = {lekarsky ultrazvuk, stenoza karotid, konvolucna neuronova siet},
+	keywords-english = {medcial ultrasound, carotid stenosis, convolutional neural network},
 	day = 5,
 	month = 1,
 	year = 2021,
@@ -122,10 +122,14 @@ and understand the principles behind it \cite{AIMAbook}. Most of the researches
 assumes that ability to learn is a predisposition for intelligence. \cite{KONONENKO200189}
 Machine learning is a subfield of AI, which focuses on learning a behavior from data.
 The rise of deep learning, an area of machine learning which focuses on deep neural networks,
-started around 2010, when this models outperformed algorithm based methods. 
+started around 2010, when this models outperformed algorithm based methods \cite{DL_BOOK}. 
 Since than, deep learning has been applied in a wide range of applications, 
-from natural language processing, finance, image processing or medical diagnosis.
-SOMETHING ABOUT APPLICATION DL IN MEDICNE - GENELRALY!
+from natural language processing \cite{mikolov2013efficient}, finance \cite{Ding2015DeepLF}, 
+image processing \cite{AlexNet} or medical diagnosis \cite{6868045}.
+
+Paragraph - Image processing in medicine
+
+Paragraph - Thesis - direct topis intro
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -153,28 +157,38 @@ Usually they take as an input grid structured data \cite{DL_BOOK}, typicaly imag
  example in anlayzing sentiment of a text \cite{SENTIMENT_CNN}, time series classification 
 \cite{TS_CNN} or in the field of recommender systems \cite{REC_CNN}. Its main component is a
 convolutional layer, which is often combined a pooling layer. One may find convolutional 
-networks combined with fully-connected or even LSTM layers \cite{LSTM_CNN}.
+networks combined with fully-connected or even LSTM layers \cite{LSTM_CNN}. In this section
+will be discussed the most used ones - convollutional, pooling and fully connected.
 
 
 \section{Convolutional layer}
 The cornerstone of each convolutional neural net is a convolutional layer. In this layer, 
-one or multiple convolutional filters are applied on the layer's input.  Each of the filters
-is relatively small and it is continuously applied over the input. 
+one or multiple convolutional filters are applied on the layer's input. In the figure TODO we 
+can see different convolutional filters applied on an image. In the neural network, each of the 
+trainable filters is relatively small and serves as a feature extractor. At each position, 
+filter's kernel takes an input from its receptors field, computes it's weighted sum, adds bias 
+nd transform the input by a non-linar activation function. This is transformation described by 
+the equation TODO add eq. The kernel is continuosly applied over an input, and the ditance
+betweed two such operations is called stride. Since convolution reduce the dimension of an
+image, the input is usully padded with some constant value (for example 0), to perserve it.
+On the image TODO, it is shown convloution on an image of size 5x5, and the size of the 
+kernel is 3x3. To keep the spatial dimension, zero padding is used.
 
 \begin{equation} 
 	Y_{i,j}=\sigma(b+\sum_{k=0}^{x}\sum_{l=0}^{y}w_{k,l}a_{i+k,j+l}),
 \end{equation} 
 
 \section{Pooling layer}
-The pooling layers 
+Pooling layers often follows the convolutional ones, and their purpose is to reduce 
+the dimensionaluty. Fistly was used average pooling, which computed average value of
+the receptor field, shown in equation A.3. In the last years was introduced, max-pooling, 
+which propagates the maximum value at each postion \cite{CNNREW}. For example, using pooling
+layer with receptor field of size 2x2 and stride 2, reduces dimension to falf. Such example
+can be seen on fitgure TODO.
 
-\subsection{Average-pooling}
 \begin{equation} 
 	Y_{i,j}=\frac{1}{xy}\sum_{k=0}^{x}\sum_{l=0}^{y}w_{k,l}a_{i+k,j+l},
 \end{equation} 
-
-
-\subsection{Max-pooling}
 
 \begin{equation} 
 	Y_{i,j} = \max_{(p,q)\in{\Re_{i,j}}}(x_{p,q}),
@@ -182,14 +196,42 @@ The pooling layers
 
 
 \section{Fully-connected layer}
-To write.
+Fully-connected layer is composed from one, or multiple neurons, where each neuron is connected
+to every unit in previous layer by trainable weight. With added bias and transformation with
+non-linear function, the output is forwarded to the next layer.
+
+\begin{equation} 
+	Y_{i,j}=\sigma(b +\sum_{k=0}^{n}w_{k,j}a_{k,j-1}),
+\end{equation}
 
 
 \section{Architecture}
-To write.
+Typicaly, input to the CNN is fixed, so the image needs to preprocessed accordingly.
+Fistly, an input is proessed by series of convolutional layers grouped in blocks, 
+where everu convolutional layer has the same same setting (number of filters, kernel size, 
+stride,padding). The dimension between the block is reduced by a pooling layer, and the number
+of filters in next conv. block increased. The last part is composed by one or multiple
+fully-connected layers. The nubmer of neurons is depedent on the application. If network
+should behave as a binary classifier, than we can use one neuron with sigmoid 
+activation fcuntion. If the aim is to create classify n categories, the layer should
+contain n neurons followed by a soft-max fucntion. In the case of localization of a single
+object, four neurons can predict two corners of a box suronding the target. The whole Architecture
+can be seen on figure TODO.
 
 
 \section{Training}
+During the training of a network, its free parametes, weights and biases, are being changed to values,
+which make the model perform well on the training dataset. The performance of a model is meassured by a 
+loss function. In the case of regression, sum-of-squared errors can be used to compute the fit
+
+$$R\(\theta\) = finish$$.
+
+To evaluate classifier can be used cross-entropy:
+
+$$R\(\theta\) = finish$$.
+
+The loss of a model is typicaly reduced by stochastic gradient descent, in a case of neural network also
+called backpropagation - the gradient is propagated back trough the network. \cite{hastie2009elements}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
