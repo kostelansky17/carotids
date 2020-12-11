@@ -1,15 +1,15 @@
 from copy import deepcopy
 from typing import Union
 
-from torch import device, Optimizer, set_grad_enabled
+from torch import device, set_grad_enabled
 from torch.nn import Module
 from torch.nn.modules.loss import _Loss
+from torch.optim.optimizer import Optimizer
 from torch.optim.lr_scheduler import _LRScheduler
 from torch.utils.data import DataLoader
 from torch.utils.data.dataset import Dataset
 
 from carotids.metrics import accuracy_torch, evaluate_model_categorization
-from carotids.utils import split_dataset_into_dataloaders
 
 
 def train_model(
