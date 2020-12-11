@@ -132,21 +132,26 @@ class LocCrop:
         """
         if uniform() <= self.p:
             w, h = img.size
+            
+            if bounding_box[0] > 0 and \
+               bounding_box[1] > 0 and \
+               bounding_box[2] < w and \
+               bounding_box[3] < h:
 
-            crop_x0 = randint(0, bounding_box[0])
-            crop_y0 = randint(0, bounding_box[1])
-            crop_w = randint(bounding_box[2], w) - crop_x0
-            crop_h = randint(bounding_box[3], h) - crop_y0
+                crop_x0 = randint(0, bounding_box[0])
+                crop_y0 = randint(0, bounding_box[1])
+                crop_w = randint(bounding_box[2], w) - crop_x0
+                crop_h = randint(bounding_box[3], h) - crop_y0
 
-            img = crop(img, crop_y0, crop_x0, crop_h, crop_w)
-            bounding_box = asarray(
-                [
-                    bounding_box[0] - crop_x0,
-                    bounding_box[1] - crop_y0,
-                    bounding_box[2] - crop_x0,
-                    bounding_box[3] - crop_y0,
-                ]
-            )
+                img = crop(img, crop_y0, crop_x0, crop_h, crop_w)
+                bounding_box = asarray(
+                    [
+                        bounding_box[0] - crop_x0,
+                        bounding_box[1] - crop_y0,
+                        bounding_box[2] - crop_x0,
+                        bounding_box[3] - crop_y0,
+                    ]
+                )
 
         return img, bounding_box
 
@@ -196,7 +201,7 @@ class LocReshape:
 
             w_reshaped, h_reshaped = int(w * ratio), int(h * ratio)
             img = Resize((h_reshaped, w_reshaped))(img)
-            bounding_box = bounding_box * ratio
+            bounding_box = asarray(bounding_box) * ratio
 
         return img, bounding_box
 

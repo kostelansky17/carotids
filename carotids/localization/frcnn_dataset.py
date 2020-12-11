@@ -32,25 +32,20 @@ def load_coco_labels(labels_path: str) -> dict:
     annotations = coco_data["annotations"]
 
     for annotation in annotations:
-        file_name = images[annotation["image_id"] - 1]["file_name"]
+        if annotation["category_id"] == 1:
+            file_name = images[annotation["image_id"] - 1]["file_name"]
+            box = [
+              annotation["bbox"][0],
+              annotation["bbox"][1],
+              annotation["bbox"][0] + annotation["bbox"][2],
+              annotation["bbox"][1] + annotation["bbox"][3],
+            ]
 
-        boxes = [
-            asarray(
-                [
-                    annotation["bbox"][0],
-                    annotation["bbox"][1],
-                    annotation["bbox"][0] + annotation["bbox"][2],
-                    annotation["bbox"][1] + annotation["bbox"][3],
-                ]
-            )
-        ]
-
-        labels[file_name] = {
-            "boxes": boxes,
-            "labels": tensor([1], dtype=int64),
-            "image_id": tensor([annotation["image_id"]], dtype=int64),
-            "area": annotation["area"],
-        }
+            labels[file_name] = {
+                "box": box,
+                "labels": [1],
+                "image_id": annotation["image_id"]
+            }
 
     return labels
 
@@ -66,8 +61,8 @@ class FastCarotidDatasetBrno(Dataset):
         self,
         data_path: str,
         labels_path: str,
-        transformations_custom: Compose,
-        transformations_torch: LocCompose,
+        transformations_custom: LocCompose,
+        transformations_torch: Compose,
     ) -> None:
         """Initializes a training Faster R-CNN dataset.
 
@@ -110,9 +105,7 @@ class FastCarotidDatasetBrno(Dataset):
 
         img, label = self.transformations_custom(img, label)
 
-        boxes = [label]
         boxes = as_tensor([label], dtype=int64)
-
         area = (boxes[:, 3] - boxes[:, 1]) * (boxes[:, 2] - boxes[:, 0])
 
         label = {
@@ -144,7 +137,11 @@ class FastCarotidDatasetPrague(Dataset):
     """
 
     def __init__(
-        self, data_path: str, labels_path: str, transformations: Compose
+        self,
+        data_path: str,
+        labels_path: str,
+        transformations_custom: LocCompose,
+        transformations_torch: Compose,
     ) -> None:
         """Initializes a training Faster R-CNN dataset.
 
@@ -154,7 +151,9 @@ class FastCarotidDatasetPrague(Dataset):
             Path to a folder containing the images.
         labels_path:str
             Path to a JSON file containing the COCO labels.
-        transformations : Compose
+        transformations_custom : Compose
+            List of custom transformations used to preprocess the image inputs.
+        transformations_torch : LocCompose
             List of torch transformations used to preprocess the image inputs.
         """
         self.data_path = data_path
@@ -164,7 +163,8 @@ class FastCarotidDatasetPrague(Dataset):
         self.labels_path = labels_path
         self.labels = load_coco_labels(self.labels_path)
 
-        self.transformations = transformations
+        self.transformations_custom = transformations_custom
+        self.transformations_torch = transformations_torch
 
     def __getitem__(self, index: int) -> tuple:
         """Gets item from the dataset at a specified index.
@@ -182,8 +182,20 @@ class FastCarotidDatasetPrague(Dataset):
         """
         img = load_img(self.data_path, self.data_files[index])
         label = self.labels[self.data_files[index]]
+       
+        img, box = self.transformations_custom(img, label["box"])
 
-        return self.transformations(img), label
+        boxes = as_tensor([box], dtype=int64)
+        area = (boxes[:, 3] - boxes[:, 1]) * (boxes[:, 2] - boxes[:, 0])
+
+        label_out = {
+            "boxes": boxes,
+            "labels": tensor([1], dtype=int64),
+            "image_id": tensor([index], dtype=int64),
+            "area": area,
+        }
+
+        return self.transformations_torch(img), label_out
 
     def __len__(self) -> int:
         """Returns a length of the dataset.
