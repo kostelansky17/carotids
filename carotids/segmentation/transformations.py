@@ -1,5 +1,6 @@
-from numpy import array, asarray
+from numpy import asarray, where
 from numpy.random import randint, uniform
+
 from PIL import Image
 from torch import Tensor
 from torchvision.transforms import RandomHorizontalFlip, RandomVerticalFlip, Resize
@@ -63,14 +64,14 @@ class SegRandomVerticalFlip:
         """
         self.p = p
 
-    def __call__(self, img: Image, mask: Tensor) -> tuple:
+    def __call__(self, img: Image, mask: Image) -> tuple:
         """Applies random vertical flip on an image and a mask.
 
         Parameters
         ----------
         img : Image
             Image to transform.
-        mask : Tensor
+        mask : Image
             Mask to transform.
 
         Returns
@@ -85,31 +86,31 @@ class SegRandomVerticalFlip:
         return img, mask
 
 
-class LocCrop:
+class SegCrop:
     """Random crop.
 
     Represents random vertical crop which transforms image and segmentation mask. 
     Crops an input image so that whole object is perserved.
     """
 
-    def __init__(self, p: float = 0.5):
+    def __init__(self, t: int = 0):
         """Initializes a random crop.
 
         Parameters
         ----------
-        p : float
-            Probability with which transformation is applied.
+        t : int
+            TODO.
         """
-        self.p = p
+        self.t = t
 
-    def __call__(self, img: Image, mask: Tensor) -> tuple:
+    def __call__(self, img: Image, mask: Image) -> tuple:
         """Applies random crop on an image and a mask.
 
         Parameters
         ----------
         img : Image
             Image to transform.
-        mask: Tensor
+        mask: Image
             Mask to transform.
 
         Returns
@@ -117,12 +118,23 @@ class LocCrop:
         tuple
             Transformed image and mask.
         """
-        if uniform() <= self.p:
-            img = crop(img, crop_y0, crop_x0, crop_h, crop_w)
-        else:
-            pass
+        mask_indicies = where(
+            (asarray(mask) == [255, 255, 255]).any(axis=2)
+        )
 
-        return img, mask
+        x1, y1 = mask_indicies[1].min(), mask_indicies[0].min()
+        x2, y2 = mask_indicies[1].max(), mask_indicies[0].max()
+
+        if self.t != 0:
+            t = randint(self.t)
+        else:
+            t = 0
+        
+        width, height = img.size
+        x1, y1 = max(x1 - t, 0), max(y1 - t, 0)
+        x2, y2 = min(x2 + t, width), min(y2 + t, height)
+
+        return img.crop((x1, y1, x2, y2)), mask.crop((x1, y1, x2, y2))
 
 
 class SegCompose:
@@ -136,14 +148,14 @@ class SegCompose:
         """
         self.transformations = transformations
 
-    def __call__(self, img: Image, mask: Tensor) -> tuple:
+    def __call__(self, img: Image, mask: Image) -> tuple:
         """Applies transformations on an image and a mask.
 
         Parameters
         ----------
         img : Image
             Image to be processed.
-        mask : Tensor
+        mask : Image
             Mask to be processed.
         
         Returns

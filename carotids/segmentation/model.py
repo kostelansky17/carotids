@@ -1,5 +1,13 @@
 from torch import cat, tensor
-from torch.nn import Conv2d, MaxPool2d, MaxModule, Module, ModuleList, PReLU, Upsample
+from torch.nn import (
+    BatchNorm2d,
+    Conv2d,
+    MaxPool2d,
+    Module,
+    PReLU,
+    Sequential,
+    Upsample,
+)
 
 
 class Unet(Module):
@@ -29,7 +37,7 @@ class Unet(Module):
         self.R1 = RightBlock(256, 128)
         self.R0 = RightBlock(128, 64)
 
-        self.last_layer = Conv2d(64, number_of_classes, 1)
+        self.last_layer = Conv2d(64, number_of_classes, kernel_size=1)
 
     def forward(self, input: tensor) -> tensor:
         """Applies model to an input.
@@ -44,14 +52,13 @@ class Unet(Module):
         tensor:
             Segmentation of an input.
         """
-
         input, l0 = self.L0(input)
         input, l1 = self.L1(input)
         input, l2 = self.L2(input)
         input, l3 = self.L3(input)
-        input, _ = self.L4(input)
+        _, l4 = self.L4(input)
 
-        input = self.R3(input, l3)
+        input = self.R3(l4, l3)
         input = self.R2(input, l2)
         input = self.R1(input, l1)
         input = self.R0(input, l0)
@@ -72,6 +79,7 @@ class ConvBlock(Module):
         kernel_size: tuple = (3, 3),
         stride: int = 1,
         padding: int = 1,
+        dropout: float = 0.25
     ):
         """Initializes a Block of convolutional layers.
 
@@ -88,13 +96,16 @@ class ConvBlock(Module):
         padding : int
             Number of padded pixels in a convolutional layer.
         """
-        self.layers = ModuleList(
-            [
+        super(ConvBlock, self).__init__()
+
+        self.layers = Sequential(
+            
                 Conv2d(in_channels, out_channels, kernel_size, stride, padding),
                 PReLU(),
                 Conv2d(out_channels, out_channels, kernel_size, stride, padding),
+                BatchNorm2d(out_channels),
                 PReLU(),
-            ]
+            
         )
 
     def forward(self, input: tensor) -> tensor:
@@ -110,8 +121,7 @@ class ConvBlock(Module):
         tensor
             A tensor after applying convolutional layers.
         """
-        for layer in self.layers:
-            input = layer(input)
+        input = self.layers(input)
 
         return input
 
@@ -148,6 +158,8 @@ class LeftBlock(Module):
         pool_kernel_size : int
             Size of a kernel in a maxpooling layer.
         """
+        super(LeftBlock, self).__init__()
+
         self.conv_layers = ConvBlock(
             in_channels, out_channels, kernel_size, stride, padding
         )
@@ -168,8 +180,8 @@ class LeftBlock(Module):
             and a tensor process by a block of convolutional layers and maxpooling layer
             (input to the next Left Block).
         """
-        output = self.conv_layers.forward(input)
-        return output, self.pool_layer(output)
+        output = self.conv_layers(input)
+        return self.pool_layer(output), output
 
 
 class RightBlock(Module):
@@ -185,7 +197,7 @@ class RightBlock(Module):
         kernel_size: tuple = (3, 3),
         stride: int = 1,
         padding: int = 1,
-        up_size: int = 2,
+        scale_factor: int = 2,
     ):
         """Initializes a Left Block.
 
@@ -201,38 +213,46 @@ class RightBlock(Module):
             Stride used in a convolutional layer.
         padding : int
             Number of padded pixels in a convolutional layer.
-        up_size : int
-            Size of an upsampling.
+        scale_factor : int
+            Scale factor of an upsampling.
         """
-        self.up_layer = ModuleList(
-            [
-                Upsample(up_size, mode="bilinear"),
+        super(RightBlock, self).__init__()
+
+        self.up_layer = Sequential(
+                Upsample(scale_factor=scale_factor, mode="bilinear", align_corners=True),
                 ConvBlock(in_channels, out_channels, kernel_size, stride, padding),
-                PReLU(),
-            ]
+            
         )
         self.conv_layers = ConvBlock(
             in_channels, out_channels, kernel_size, stride, padding
         )
 
-    def forward(self, left_input: tensor, down_input: tensor) -> tensor:
+    def forward(self, down_input: tensor, left_input: tensor) -> tensor:
         """Applies a block of layers to an input.
 
         Parameters
         ----------
-        left_input : tensor
-            A tensor from a left block of a model.
         down_input : tensor
             A tensor from a right block of a model.
+        left_input : tensor
+            A tensor from a left block of a model.
         Returns
         -------
         tensor
             Tensor created by applying block of layers to inputs.
         """
-        for layer in self.up_layer:
-            down_input = layer(down_input)
-
-        input = cat((left_input, down_input), dim=-1)
-        output = self.conv_layers.forward(input)
+        down_input = self.up_layer(down_input)
+        
+        input = cat((left_input, down_input), dim=1)
+        output = self.conv_layers(input)
 
         return output
+
+
+if __name__ == "__main__":
+    import torch
+
+    input = torch.randn(1, 3, 512, 512)
+    model = Unet(4)
+
+    print(model(input))
