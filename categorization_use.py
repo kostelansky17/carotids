@@ -7,20 +7,19 @@ from torchvision.transforms import Compose, Normalize, Resize, ToTensor
 from carotids.preprocessing import load_img
 from carotids.categorization.models import create_resnet50
 
-CATEGORIES = 3
+CATEGORIES = 4
 DEVICE = device("cpu")
 TRANSFORMATIONS = Compose(
     [
         Resize((224, 224)),
         ToTensor(),
-        Normalize([0.1257, 0.1267, 0.1278], [0.1528, 0.1537, 0.1551]),
     ]
 )
 
-PATH_TO_DATA = "FILL_ME"
-PATH_TO_MODEL = "FILL_ME"
+PATH_TO_DATA = "TO_FILL"
+PATH_TO_MODEL = "TO_FILL"
 
-
+    
 @no_grad()
 def categorization_example_use() -> None:
     """Example usage of categorization model. Load model from path selected by 
@@ -33,7 +32,7 @@ def categorization_example_use() -> None:
     model.to(DEVICE)
     model.eval()
 
-    image_names = listdir(PATH_TO_DATA)
+    image_names = sorted(listdir(PATH_TO_DATA))
     softmax = Softmax(dim=1)
 
     for image_name in image_names:
@@ -44,8 +43,8 @@ def categorization_example_use() -> None:
         predictions = model(img_tensor.unsqueeze(0))
         probabs = softmax(predictions)
         print(
-            "Image {} : Long:{:.2f}%, Trav:{:.2f}%, Diff:{:.2f}%".format(
-                image_name, probabs[0][0], probabs[0][1], probabs[0][2]
+            "Image {} : Long:{:.2f}%, Trav:{:.2f}%, Coninc:{:.2f}%, Doppler:{:.2f}%".format(
+                image_name, probabs[0][0], probabs[0][1], probabs[0][2], probabs[0][3]
             )
         )
 

@@ -130,25 +130,43 @@ class LocCrop:
         tuple
             Transformed image and bounding box.
         """
+        x0, y0, x1, y1 = bounding_box
+
         if uniform() <= self.p:
             w, h = img.size
+            if bounding_box[0] > 0 and bounding_box[2] < w:
+                crop_x0 = randint(0, bounding_box[0])
+                crop_w = randint(bounding_box[2], w) - crop_x0
+                
+                img = crop(
+                    img,
+                    0,
+                    crop_x0,
+                    h,
+                    crop_w
+                )
 
-            crop_x0 = randint(0, bounding_box[0])
-            crop_y0 = randint(0, bounding_box[1])
-            crop_w = randint(bounding_box[2], w) - crop_x0
-            crop_h = randint(bounding_box[3], h) - crop_y0
+                x0 = bounding_box[0] - crop_x0
+                x1 = bounding_box[2] - crop_x0
+            
 
-            img = crop(img, crop_y0, crop_x0, crop_h, crop_w)
-            bounding_box = asarray(
-                [
-                    bounding_box[0] - crop_x0,
-                    bounding_box[1] - crop_y0,
-                    bounding_box[2] - crop_x0,
-                    bounding_box[3] - crop_y0,
-                ]
-            )
+            w, h = img.size
+            if bounding_box[1] > 0 and bounding_box[3] < h:
+                crop_y0 = randint(0, bounding_box[1])
+                crop_h = randint(bounding_box[3], h) - crop_y0
 
-        return img, bounding_box
+                img = crop(
+                    img,
+                    crop_y0,
+                    0,
+                    crop_h,
+                    w,
+                )
+
+                y0 = bounding_box[1] - crop_y0
+                y1 = bounding_box[3] - crop_y0
+
+        return img, asarray([x0, y0, x1, y1])
 
 
 class LocReshape:
@@ -196,7 +214,7 @@ class LocReshape:
 
             w_reshaped, h_reshaped = int(w * ratio), int(h * ratio)
             img = Resize((h_reshaped, w_reshaped))(img)
-            bounding_box = bounding_box * ratio
+            bounding_box = asarray(bounding_box) * ratio
 
         return img, bounding_box
 
