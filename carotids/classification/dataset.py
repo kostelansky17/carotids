@@ -6,15 +6,15 @@ from torch.utils.data.dataset import Dataset
 from carotids.preprocessing import load_img
 
 
-class CategorizationDataset(Dataset):
-    """Represents a dateset used for categorization.
+class ClassificationDataset(Dataset):
+    """Represents a dateset used for classification.
 
-    Reads names of the files for all categories and creates labels.
+    Reads names of the files for all classes and creates labels.
     Loads image on when it is gotten.
     """
 
     def __init__(self, img_dirs: dict, transformations: list) -> None:
-        """Initializes a categorization dataset.
+        """Initializes a classification dataset.
 
         Parameters
         ----------
@@ -35,7 +35,7 @@ class CategorizationDataset(Dataset):
         ----------
         img_dirs : dict
             Dictionary with labels as keys and paths to data as values.
-        
+
         Returns
         -------
         tuple
@@ -58,7 +58,7 @@ class CategorizationDataset(Dataset):
         ----------
         index : int
             Index of an item to return.
-        
+
         Returns
         -------
         tuple
