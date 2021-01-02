@@ -1,7 +1,7 @@
-import torch
-from torch.nn import CrossEntropyLoss
-from torch.optim import SGD
-from torch.optim.lr_scheduler import MultiStepLR
+from torch import cuda, device, save
+from torch.nn import CrossEntropyLoss, Module
+from torch.optim import RMSprop
+from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torch.utils.data import DataLoader
 from torchvision.transforms import (
     Compose,
@@ -13,30 +13,38 @@ from torchvision.transforms import (
 
 from carotids.segmentation.dataset import SegmentationDataset
 from carotids.segmentation.model import Unet
+from carotids.segmentation.train_model import train_model
 from carotids.segmentation.transformations import (
     SegCompose,
     SegCrop,
     SegRandomHorizontalFlip,
     SegRandomVerticalFlip,
 )
-from carotids.train_model import train_model
 
 
-IMG_PATH = ""
-LABELS_PATH = ""
-CATEGORIES = 4
+CATEGORIES = 3
+EPOCHS = 1
 
-TRANSFORMATIONS_TRAIN_SEG = SegCompose(
+# data pats - longitudinal
+LONGITUDINAL_TRAIN_IMG_PATH = "INSERT_PATH"
+LONGITUDINAL_TRAIN_LABELS_PATH = "INSERT_PATH"
+
+LONGITUDINAL_VAL_IMG_PATH = "INSERT_PATH"
+LONGITUDINAL_VAL_LABELS_PATH = "INSERT_PATH"
+
+# data pats - transverse
+TRANSVERSE_TRAIN_IMG_PATH = "INSERT_PATH"
+TRANSVERSE_TRAIN_LABELS_PATH = "INSERT_PATH"
+
+TRANSVERSE_VAL_IMG_PATH = "INSERT_PATH"
+TRANSVERSE_VAL_LABELS_PATH = "INSERT_PATH"
+
+
+# transformations
+TRANSFORMATIONS_SEG = SegCompose(
     [
-        SegRandomHorizontalFlip(),
-        SegRandomVerticalFlip(),
-        SegCrop(15),
-   ]
-)
-TRANSFORMATIONS_TEST_SEG = SegCompose(
-    [
-        SegCrop(),
-   ]
+        SegCrop(default_t=15),
+    ]
 )
 TRANSFORMATIONS_TORCH = Compose(
     [
@@ -46,33 +54,82 @@ TRANSFORMATIONS_TORCH = Compose(
 )
 
 
-def main():
+def train_segmentation_model(
+    TRAIN_IMG_PATH: str,
+    TRAIN_LABELS_PATH: str,
+    VAL_IMG_PATH: str,
+    VAL_LABELS_PATH: str,
+    model_save_name: str = "segmentation_model.pt",
+) -> Module:
     """The approach which has been used for training best categorization model
     as defined and described in the given report.
+
+    Parameters
+    ----------
+    TRAIN_IMG_PATH : str
+        Path to raw train images.
+    TRAIN_LABELS_PATH : str
+        Path to train labels.
+    VAL_IMG_PATH : str
+        Path to raw validation images.
+    VAL_LABELS_PATH : str
+        Path to train labels.
+    model_save_name : str
+        Name of the trained model.
+
+    Returns
+    -------
+    Module
+        Trained model.
     """
     train_dataset = SegmentationDataset(
-        IMG_PATH, 
-        LABELS_PATH,
-        TRANSFORMATIONS_TRAIN_SEG,
-        TRANSFORMATIONS_TORCH
+        TRAIN_IMG_PATH, TRAIN_LABELS_PATH, TRANSFORMATIONS_SEG, TRANSFORMATIONS_TORCH
     )
 
-    train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True)
-    device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
+    val_dataset = SegmentationDataset(
+        VAL_IMG_PATH, VAL_LABELS_PATH, TRANSFORMATIONS_SEG, TRANSFORMATIONS_TORCH
+    )
+
+    train_loader = DataLoader(train_dataset, batch_size=2, shuffle=True)
+    val_loader = DataLoader(val_dataset, batch_size=2, shuffle=False)
+
+    torch_device = device("cuda") if cuda.is_available() else device("cpu")
 
     model = Unet(CATEGORIES)
-    model.to(device)
+    model.to(torch_device)
 
     loss = CrossEntropyLoss()
-    optimizer = SGD(model.parameters(), lr=0.01, momentum=0.99)
-    scheduler = MultiStepLR(optimizer, milestones=[20, 40, 60], gamma=0.1)
+    optimizer = RMSprop(model.parameters(), lr=0.0001, momentum=0.99)
+    scheduler = ReduceLROnPlateau(optimizer, patience=5)
 
-    model, losses, accuracies = train_model(
-        model, train_loader, train_loader, loss, optimizer, device, scheduler, 1
+    model = train_model(
+        model,
+        train_loader,
+        val_loader,
+        loss,
+        optimizer,
+        torch_device,
+        scheduler,
+        EPOCHS,
     )
 
-    torch.save(model.state_dict(), "categorization_model.pth")
+    save(model.state_dict(), model_save_name)
 
 
 if __name__ == "__main__":
-    main()
+    print("Transverse model:")
+    train_segmentation_model(
+        TRANSVERSE_TRAIN_IMG_PATH,
+        TRANSVERSE_TRAIN_LABELS_PATH,
+        TRANSVERSE_VAL_IMG_PATH,
+        TRANSVERSE_VAL_LABELS_PATH,
+        "trav_segmentation_model.pt",
+    )
+    print("Longitudinal model:")
+    train_segmentation_model(
+        LONGITUDINAL_TRAIN_IMG_PATH,
+        LONGITUDINAL_TRAIN_LABELS_PATH,
+        LONGITUDINAL_VAL_IMG_PATH,
+        LONGITUDINAL_VAL_LABELS_PATH,
+        "long_segmentation_model.pt",
+    )

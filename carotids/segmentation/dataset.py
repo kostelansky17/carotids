@@ -22,6 +22,7 @@ class SegmentationDataset(Dataset):
         labels_path: str,
         transformations_custom: SegCompose,
         transformations_torch: Compose,
+        plaque_with_wall: bool = True,
     ) -> None:
         """Initializes a segmentation dataset.
 
@@ -35,6 +36,8 @@ class SegmentationDataset(Dataset):
             Composition of custom segmentation transformations.
         transformations_torch : Compose
             Composition of torch segmentation transformations.
+        plaque_with_wall : bool
+            If True, the plaque and wall clases are united.
         """
         self.data_path = data_path
         self.labels_path = labels_path
@@ -42,6 +45,8 @@ class SegmentationDataset(Dataset):
 
         self.transformations_custom = transformations_custom
         self.transformations_torch = transformations_torch
+
+        self.plaque_with_wall = plaque_with_wall
 
     def __getitem__(self, index: int) -> tuple:
         """Gets item from the dataset at a specified index.
@@ -77,5 +82,25 @@ class SegmentationDataset(Dataset):
         return len(self.img_files)
 
     def _label_to_mask(self, label: Tensor):
+        """Processes label to a Tensor mask. If plaque_with_wall
+        is selected to True, the plaque category is changed
+        to the wall category.
+
+
+        Parameters
+        ----------
+        label : Tensor
+            Index of an item to return.
+
+        Returns
+        -------
+        Tensor
+            Tensor label.
+        """
         mask = cat((zeros(1, 512, 512), label))
-        return mask.argmax(0)
+        mask = mask.argmax(0)
+
+        if self.plaque_with_wall:
+            mask[mask == 3] = 1
+
+        return mask

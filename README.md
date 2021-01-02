@@ -1,11 +1,11 @@
 # Cartroids
 
-Carotis were created as a software-research semester project at the Faculty
-of Electrical engineering at CTU in Prague. In this work we explore dataset
+Carotis were created as a Master thesis project at the Faculty
+of Electrical engineering at CTU in Prague. In this work is explored dataset
 of ultrasound carotid images. The project itself is divided into three main 
 parts:
 
-* Categorization
+* Classification
 * Localization
 * Segmentation
   
@@ -15,7 +15,7 @@ of this tasks are located in the folder reports.
 
 ## Examples
 
-### Categorization
+### Classification
 
 The sample use the project for training the models described in the particular 
 report can be found in **categorization_train.py** and later usage of a trained
