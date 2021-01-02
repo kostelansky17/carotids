@@ -187,7 +187,7 @@ def evaluate_dataset_iou_frcnn(
 
         outputs = [{k: v.to("cpu") for k, v in t.items()} for t in outputs]
         for i in range(len(outputs)):
-            if len(outputs[i]["boxes"]) > 0:
+            if len(outputs[i]["boxes"]) > 1:
                 many_predictions += 1
                 acc += iou(
                     targets[i]["boxes"][0].unsqueeze(0),
