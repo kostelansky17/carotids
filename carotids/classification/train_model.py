@@ -7,7 +7,6 @@ from torch.nn.modules.loss import _Loss
 from torch.optim.optimizer import Optimizer
 from torch.optim.lr_scheduler import _LRScheduler
 from torch.utils.data import DataLoader
-from torch.utils.data.dataset import Dataset
 
 from carotids.metrics import accuracy_torch, evaluate_classification_model
 
@@ -28,7 +27,7 @@ def train_model(
     ----------
     model : Module
         Model to train.
-    train_data : Dataset
+    train_data : DataLoader
         Train data.
     loss : _Loss
         Loss function.
