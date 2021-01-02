@@ -15,7 +15,7 @@ def accuracy_torch(output: tensor, label: tensor) -> float:
         Probabilities predicted by a model.
     label : tensor
         True labels.
-    
+
     Returns
     -------
     float
@@ -60,7 +60,7 @@ def accuracy_dataset(dataset: Dataset, model: Module, device: device) -> float:
 
 
 @no_grad()
-def evaluate_model_categorization(
+def evaluate_classification_model(
     model: Module, dataloader: DataLoader, loss: _Loss, device: device
 ) -> tuple:
     """Computes loss and accuracy of a model on a given dataloader.
@@ -151,9 +151,9 @@ def iou(labels: tensor, outputs: tensor, treshold: float) -> int:
 def evaluate_dataset_iou_frcnn(
     model: Module, data_loader: DataLoader, device: device, treshold: float = 0.85
 ) -> tuple:
-    """Computes a number of predictions of a Faster R-CNNmodel on a dataloader 
+    """Computes a number of predictions of a Faster R-CNNmodel on a dataloader
     with IoU highier than the treshold, and number of images on which is found
-    zero predicted objects, one predicted object or many predicted object. 
+    zero predicted objects, one predicted object or many predicted object.
 
     Parameters
     ----------
@@ -169,8 +169,8 @@ def evaluate_dataset_iou_frcnn(
     Returns
     -------
     tuple
-        Number of predictions with IoU highier than a treshold, number of images 
-        on which is found zero predicted objects, one predicted object and many 
+        Number of predictions with IoU highier than a treshold, number of images
+        on which is found zero predicted objects, one predicted object and many
         predicted object.
     """
     zero_predictions = 0
@@ -211,8 +211,8 @@ def evaluate_dataset_iou_frcnn(
 def evaluate_dataset_iou_resnet(
     model: Module, dataset: Dataset, device: device, treshold: float = 0.85
 ) -> float:
-    """Computes a number of predictions of a ResNet on a dataset with IoU 
-    highier than the treshold. 
+    """Computes a number of predictions of a ResNet on a dataset with IoU
+    highier than the treshold.
 
     Parameters
     ----------

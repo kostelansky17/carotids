@@ -2,12 +2,13 @@ from os import listdir
 
 from torch import device, load, no_grad
 from torch.nn import Softmax
-from torchvision.transforms import Compose, Normalize, Resize, ToTensor
+from torchvision.transforms import Compose, Resize, ToTensor
 
+from carotids.classification.models import create_resnet50
 from carotids.preprocessing import load_img
-from carotids.categorization.models import create_resnet50
 
-CATEGORIES = 4
+
+CLASSES = 4
 DEVICE = device("cpu")
 TRANSFORMATIONS = Compose(
     [
@@ -16,18 +17,18 @@ TRANSFORMATIONS = Compose(
     ]
 )
 
-PATH_TO_DATA = "TO_FILL"
-PATH_TO_MODEL = "TO_FILL"
+PATH_TO_DATA = "data_samples/classification_samples"
+PATH_TO_MODEL = "INSERT_PATH"
 
-    
+
 @no_grad()
-def categorization_example_use() -> None:
-    """Example usage of categorization model. Load model from path selected by 
-    parameter PATH_TO_MODEL. Evaluates the images in the folder specified by 
-    the PATH_TO_DATA parameter. Prints name of the file and probabilities for
+def classification_example_use() -> None:
+    """Example usage of classification model. Load model from path selected by
+    parameter PATH_TO_MODEL. Evaluates the images in the folder specified by
+    the PATH_TO_DATA parameter. Prints the name of the file and probabilities for
     each class.
     """
-    model = create_resnet50(CATEGORIES)
+    model = create_resnet50(CLASSES)
     model.load_state_dict(load(PATH_TO_MODEL, map_location=DEVICE))
     model.to(DEVICE)
     model.eval()
@@ -50,4 +51,4 @@ def categorization_example_use() -> None:
 
 
 if __name__ == "__main__":
-    categorization_example_use()
+    classification_example_use()

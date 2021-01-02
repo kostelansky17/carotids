@@ -9,7 +9,7 @@ from torch.optim.lr_scheduler import _LRScheduler
 from torch.utils.data import DataLoader
 from torch.utils.data.dataset import Dataset
 
-from carotids.metrics import accuracy_torch, evaluate_model_categorization
+from carotids.metrics import accuracy_torch, evaluate_classification_model
 
 
 def train_model(
@@ -53,7 +53,6 @@ def train_model(
     accuracies = {"train": [], "val": []}
 
     train_size = len(train_loader.dataset)
-    val_size = len(val_loader.dataset)
 
     best_model = deepcopy(model.state_dict())
     best_loss = 10 ** 8
@@ -79,13 +78,13 @@ def train_model(
                 l.backward()
                 optimizer.step()
 
-                if scheduler:
-                    scheduler.step()
-
                 train_epoch_loss += l.item() * inputs.size(0)
                 train_epoch_acc += accuracy_torch(outputs, labels) * inputs.size(0)
 
-        val_epoch_loss, val_epoch_acc = evaluate_model_categorization(
+        if scheduler:
+            scheduler.step(train_epoch_loss / train_size)
+
+        val_epoch_loss, val_epoch_acc = evaluate_classification_model(
             model, val_loader, loss, device
         )
 
