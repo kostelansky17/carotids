@@ -1,3 +1,8 @@
+#
+*./.DS_Store
+
+
+# latex
 latex/*
 !latex/kostema3.bib
 !latex/kostema3.bbl
