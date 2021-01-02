@@ -9,7 +9,7 @@ class GaussianNoiseTransform(object):
     """Adds random gaussian noise to a tensor.
 
     This class can be used in the PyTorch's  tensor.Compose pipeline used for
-    preprocessing tensors. 
+    preprocessing tensors.
     """
 
     def __init__(self, mean: float = 0.0, std: float = 1.0) -> None:
@@ -19,7 +19,7 @@ class GaussianNoiseTransform(object):
         ----------
         mean : float
             Mean of the distribution used noise generation.
-        std : float 
+        std : float
             Standart deviation of the distribution used noise generation.
         """
         self.std = std
@@ -61,7 +61,7 @@ def compute_mean_image_dataloader(dataloader: DataLoader) -> tensor:
     ----------
     dataloader : DataLoader
         Dataloader to compute mean.
-    
+
     Returns
     -------
     tensor
@@ -109,7 +109,7 @@ def compute_standardization_image_dataloader(dataloader: DataLoader) -> tuple:
     ----------
     dataloader : DataLoader
         Dataloader to compute parameters.
-    
+
     Returns
     -------
     tuple
@@ -144,16 +144,40 @@ def split_dataset_into_dataloaders(
         Train dataloader with number of train samples and validation dataloader
         with number of validation samples.
     """
+    trainset, train_size, valset, val_size = split_dataset(dataset, val_split, seed)
+
+    train_loader = DataLoader(trainset, batch_size=batch_size, shuffle=True)
+    val_loader = DataLoader(valset, batch_size=batch_size, shuffle=False)
+
+    return train_loader, train_size, val_loader, val_size
+
+
+def split_dataset(dataset: Dataset, val_split: float = 0.1, seed: int = 17):
+    """Splits dataset into train and validation ones and transform them into
+    dataloaders.
+
+    Parameters
+    ----------
+    dataset : Dataset
+        Dataset to split.
+    val_split : float
+        Ratio used in spliting.
+    seed : int
+        Seed used for spliting samples
+
+    Returns
+    -------
+    tuple
+        Train dataloader with number of train samples and validation dataloader
+        with number of validation samples.
+    """
     val_size = int(len(dataset) * val_split)
     train_size = len(dataset) - val_size
 
     manual_seed(seed)
     trainset, valset = random_split(dataset, [train_size, val_size])
 
-    train_loader = DataLoader(trainset, batch_size=batch_size, shuffle=True)
-    val_loader = DataLoader(valset, batch_size=batch_size, shuffle=False)
-
-    return train_loader, train_size, val_loader, val_size
+    return trainset, train_size, valset, val_size
 
 
 def recompute_labels(
@@ -167,11 +191,11 @@ def recompute_labels(
     image : Image
         Dataset to split.
     x0 : int
-        X coordinate of left upper corner of the object's bounding box. 
+        X coordinate of left upper corner of the object's bounding box.
     y0 : int
-        Y coordinate of left upper corner of the object's bounding box. 
+        Y coordinate of left upper corner of the object's bounding box.
     x1 : int
-        X coordinate of right lower corner of the object's bounding box. 
+        X coordinate of right lower corner of the object's bounding box.
     y1 : int
         Y coordinate of right lower corner of the object's bounding box.
     target_size : tuple
@@ -180,7 +204,7 @@ def recompute_labels(
     Returns
     -------
     FloatTensor
-        Coordinates of bounding box recomputed to the shape into which will be 
+        Coordinates of bounding box recomputed to the shape into which will be
         the image reshaped.
     """
     if len(asarray(image).shape) == 2:
@@ -194,10 +218,3 @@ def recompute_labels(
     y0, y1 = y0 * (img_height / target_height), y1 * (img_height / target_height)
 
     return FloatTensor([x0, y0, x1, y1])
-
-
-def generate_boxes(w, h, x1, y1, x2, y2):
-    """
-    TODO: Implement generation of background objects.
-    """
-    pass
