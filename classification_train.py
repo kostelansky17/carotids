@@ -1,5 +1,5 @@
 from torch import cuda, device, save
-from torch.nn import CrossEntropyLoss
+from torch.nn import CrossEntropyLoss, Module
 from torch.optim import SGD
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torch.utils.data import DataLoader
@@ -45,9 +45,14 @@ TRANSFORMATIONS_TEST = Compose(
 )
 
 
-def train_classification_model():
+def train_classification_model() -> Module:
     """The approach which has been used for training best classification model
     as defined and described in the thesis.
+
+    Returns
+    -------
+    Module
+        Trained model.
     """
     torch_device = device("cuda") if cuda.is_available() else device("cpu")
 

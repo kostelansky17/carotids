@@ -1,6 +1,7 @@
 import copy
 
 from torch import cuda, device, save
+from torch.nn import Module
 from torch.optim import Adam, lr_scheduler
 from torch.utils.data import DataLoader
 from torchvision.transforms import Compose, ToTensor
@@ -117,9 +118,14 @@ ANTIQUE_long_val_loader = DataLoader(
 )
 
 
-def train_transverse_fasterrcnn_model():
+def train_transverse_fasterrcnn_model() -> Module:
     """The approach which has been used for the best transverse Faster R-CNN
     as defined and described in the thesis.
+
+    Returns
+    -------
+    Module
+        Trained model.
     """
     model = create_faster_rcnn(True)
     torch_device = device("cuda") if cuda.is_available() else device("cpu")
@@ -194,9 +200,14 @@ def train_transverse_fasterrcnn_model():
     save(best_model.state_dict(), "transverse_localization_model.pt")
 
 
-def train_longitudinal_fasterrcnn_model():
+def train_longitudinal_fasterrcnn_model() -> Module:
     """The approach which has been used for the best longitudinal Faster R-CNN
     as defined and described in the thesis.
+
+    Returns
+    -------
+    Module
+        Trained model.
     """
     model = create_faster_rcnn(True)
     torch_device = device("cuda") if cuda.is_available() else device("cpu")
