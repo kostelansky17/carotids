@@ -94,8 +94,10 @@ class SegRandomVerticalFlip:
 class SegCrop:
     """Random crop.
 
-    Represents random vertical crop which transforms image and segmentation mask. 
-    Crops an input image so that whole object is perserved.
+    Represents random crop which transforms image and segmentation mask.
+    Crops an input image so that whole object is perserved. This is done
+    by adding a random number of pixels to each side. Also has a default
+    setting that adds fixed number of pixels to each side.
     """
 
     def __init__(self, random_t: int = 0, default_t: int = 5):
@@ -104,9 +106,9 @@ class SegCrop:
         Parameters
         ----------
         random_t : int
-            TODO.
+            Upper bound for number of pixels added.
         default_t : int
-            TODO.
+            Fixed number of pixels added to a side.
         """
         self.random_t = random_t
         self.default_t = default_t
@@ -126,26 +128,24 @@ class SegCrop:
         tuple
             Transformed image and mask.
         """
-        mask_indicies = where(
-            (asarray(mask) == [255, 255, 255]).any(axis=2)
-        )
+        mask_indicies = where((asarray(mask) == [255, 255, 255]).any(axis=2))
 
         x1, y1 = mask_indicies[1].min(), mask_indicies[0].min()
         x2, y2 = mask_indicies[1].max(), mask_indicies[0].max()
 
         width, height = img.size
-        
+
         if self.random_t != 0:
             t = randint(self.random_t)
-        
+
             x1, y1 = max(x1 - t, 0), max(y1 - t, 0)
             x2, y2 = min(x2 + t, width), min(y2 + t, height)
         else:
             t = self.default_t
-        
+
             x1, y1 = max(x1 - t, 0), max(y1 - t, 0)
             x2, y2 = min(x2 + t, width), min(y2 + t, height)
-        
+
         return img.crop((x1, y1, x2, y2)), mask.crop((x1, y1, x2, y2))
 
 

@@ -79,7 +79,7 @@ class ConvBlock(Module):
         kernel_size: tuple = (3, 3),
         stride: int = 1,
         padding: int = 1,
-        dropout: float = 0.25
+        dropout: float = 0.25,
     ):
         """Initializes a Block of convolutional layers.
 
@@ -99,13 +99,11 @@ class ConvBlock(Module):
         super(ConvBlock, self).__init__()
 
         self.layers = Sequential(
-            
-                Conv2d(in_channels, out_channels, kernel_size, stride, padding),
-                PReLU(),
-                Conv2d(out_channels, out_channels, kernel_size, stride, padding),
-                BatchNorm2d(out_channels),
-                PReLU(),
-            
+            Conv2d(in_channels, out_channels, kernel_size, stride, padding),
+            PReLU(),
+            Conv2d(out_channels, out_channels, kernel_size, stride, padding),
+            BatchNorm2d(out_channels),
+            PReLU(),
         )
 
     def forward(self, input: tensor) -> tensor:
@@ -219,9 +217,8 @@ class RightBlock(Module):
         super(RightBlock, self).__init__()
 
         self.up_layer = Sequential(
-                Upsample(scale_factor=scale_factor, mode="bilinear", align_corners=True),
-                ConvBlock(in_channels, out_channels, kernel_size, stride, padding),
-            
+            Upsample(scale_factor=scale_factor, mode="bilinear", align_corners=True),
+            ConvBlock(in_channels, out_channels, kernel_size, stride, padding),
         )
         self.conv_layers = ConvBlock(
             in_channels, out_channels, kernel_size, stride, padding
@@ -242,17 +239,8 @@ class RightBlock(Module):
             Tensor created by applying block of layers to inputs.
         """
         down_input = self.up_layer(down_input)
-        
+
         input = cat((left_input, down_input), dim=1)
         output = self.conv_layers(input)
 
         return output
-
-
-if __name__ == "__main__":
-    import torch
-
-    input = torch.randn(1, 3, 512, 512)
-    model = Unet(4)
-
-    print(model(input))
