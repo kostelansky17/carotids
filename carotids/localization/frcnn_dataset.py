@@ -17,11 +17,11 @@ def load_coco_labels(labels_path: str) -> dict:
     ----------
     labels_path : str
         A path to JSON file with COCO labels.
-    
+
     Returns
     -------
     dict
-        Dictionary with labels, key is the image file name and values are 
+        Dictionary with labels, key is the image file name and values are
         dictionaries with data needed in training.
     """
     with open(labels_path) as coco_file:
@@ -35,25 +35,25 @@ def load_coco_labels(labels_path: str) -> dict:
         if annotation["category_id"] == 1:
             file_name = images[annotation["image_id"] - 1]["file_name"]
             box = [
-              annotation["bbox"][0],
-              annotation["bbox"][1],
-              annotation["bbox"][0] + annotation["bbox"][2],
-              annotation["bbox"][1] + annotation["bbox"][3],
+                annotation["bbox"][0],
+                annotation["bbox"][1],
+                annotation["bbox"][0] + annotation["bbox"][2],
+                annotation["bbox"][1] + annotation["bbox"][3],
             ]
 
             labels[file_name] = {
                 "box": box,
                 "labels": [1],
-                "image_id": annotation["image_id"]
+                "image_id": annotation["image_id"],
             }
 
     return labels
 
 
-class FastCarotidDatasetBrno(Dataset):
+class FastCarotidDatasetSPLab(Dataset):
     """Represents a dateset used for training Faster R-CNN.
 
-    Reads names od the images and labels from Brno dataset. The data (image and
+    Reads names od the images and labels from SPLab dataset. The data (image and
     label file) are loaded when an item is being gotten.
     """
 
@@ -93,7 +93,7 @@ class FastCarotidDatasetBrno(Dataset):
         ----------
         index : int
             Index of an item to return.
-        
+
         Returns
         -------
         tuple
@@ -128,10 +128,10 @@ class FastCarotidDatasetBrno(Dataset):
         return len(self.data_files)
 
 
-class FastCarotidDatasetPrague(Dataset):
+class FastCarotidDatasetANTIQUE(Dataset):
     """Represents a dateset used for training Faster R-CNN.
 
-    Reads names od the images and labels from Prague dataset. The images are 
+    Reads names od the images and labels from ANTIQUE dataset. The images are
     loaded when an item is being gotten and the labels are red when the Dataset
     is initialized.
     """
@@ -173,7 +173,7 @@ class FastCarotidDatasetPrague(Dataset):
         ----------
         index : int
             Index of an item to return.
-        
+
         Returns
         -------
         tuple
@@ -182,7 +182,7 @@ class FastCarotidDatasetPrague(Dataset):
         """
         img = load_img(self.data_path, self.data_files[index])
         label = self.labels[self.data_files[index]]
-       
+
         img, box = self.transformations_custom(img, label["box"])
 
         boxes = as_tensor([box], dtype=int64)
@@ -209,7 +209,7 @@ class FastCarotidDatasetPrague(Dataset):
 
 
 class FastCarotidDatasetEval(Dataset):
-    """Represents a dateset used to store data which are the input into 
+    """Represents a dateset used to store data which are the input into
     Faster R-CNN.
 
     Reads names od the images. The data are loaded when an item is
@@ -237,7 +237,7 @@ class FastCarotidDatasetEval(Dataset):
         ----------
         index : int
             Index of an item to return.
-        
+
         Returns
         -------
         tuple

@@ -1,137 +1,244 @@
 import copy
-import sys
 
-import torch
-import torch.nn as nn
-from torch.optim import lr_scheduler, SGD
+from torch import cuda, device, save
+from torch.optim import Adam, lr_scheduler
 from torch.utils.data import DataLoader
-from torchvision import transforms
+from torchvision.transforms import Compose, ToTensor
 
-from carotids.localization.detection import utils
-from carotids.localization.detection.engine import train_one_epoch
-from carotids.localization.frcnn_dataset import FastCarotidDataset
-from carotids.localization.models import create_faster_rcnn, create_resnet_model
-from carotids.localization.resnet_dataset import ResnetCarotidDataset
-from carotids.metrics import evaluate_dataset_iou_resnet, evaluate_dataset_iou_frcnn
-from carotids.train_model import train_model
+from carotids.localization.evaluation import eval_one_epoch
+from carotids.localization.frcnn_dataset import (
+    FastCarotidDatasetANTIQUE,
+    FastCarotidDatasetSPLab,
+)
+from carotids.localization.models import create_faster_rcnn
+from carotids.localization.train_model import train_one_epoch
+from carotids.localization.transformations import (
+    LocCompose,
+    LocCrop,
+    LocRandomHorizontalFlip,
+    LocRandomVerticalFlip,
+    LocReshape,
+)
+from carotids.localization.utils import collate_fn
+from carotids.utils import split_dataset
 
 
-TRAIN_IMGS_PATH = "drive/My Drive/cartroids/data/train/img/"
-TRAIN_LABELS_PATH = "drive/My Drive/cartroids/data/train/txt/"
-VALIDATION_IMGS_PATH = "drive/My Drive/cartroids/data/validation/img/"
-VALIDATION_LABELS_PATH = "drive/My Drive/cartroids/data/validation/txt/"
-TEST_IMGS_PATH = "drive/My Drive/cartroids/data/test/img/"
-TEST_LABELS_PATH = "drive/My Drive/cartroids/data/test/txt/"
+EPOCHS = 40
 
-
-TRANSFORMATIONS_ONE = transforms.Compose(
+# transformations
+TRANSFORMATIONS_TORCH = Compose(
     [
-        transforms.Resize((224, 224)),
-        transforms.ToTensor(),
-        transforms.Normalize([0.1323, 0.1323, 0.1323], [0.1621, 0.1621, 0.1621]),
+        ToTensor(),
     ]
 )
 
-TRANSFORMATIONS_TWO = transforms.Compose(
+TRANSFORMATIONS_CUSTOM = LocCompose(
     [
-        transforms.ToTensor(),
-        transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
+        LocRandomHorizontalFlip(0.5),
+        LocRandomVerticalFlip(0.5),
+        LocCrop(0.1),
+        LocReshape(0.25, 0.8, 1.2),
     ]
 )
 
-
-class ModelTypes(Enum):
-    RESNET = "RESNET"
-    FRCNN = "FRCNN"
+TRANSFORMATIONS_CUSTOM_SMPL = LocCompose([])
 
 
-def train_renset_localization():
-    train_dataset = ResnetCarotidDataset(
-        TRAIN_IMGS_PATH, TRAIN_LABELS_PATH, TRANSFORMATIONS_ONE
-    )
-    val_dataset = ResnetCarotidDataset(
-        VALIDATION_IMGS_PATH, VALIDATION_LABELS_PATH, TRANSFORMATIONS_ONE
-    )
-    test_dataset = ResnetCarotidDataset(
-        TEST_IMGS_PATH, TEST_LABELS_PATH, TRANSFORMATIONS_ONE
-    )
+# SPLab DATA
+SPLab_IMGS_PATH = "INSERT_PATH"
+SPLab_LABELS_PATH = "INSERT_PATH"
 
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-
-    model = create_resnet_model()
-    model = model.to(device)
-
-    loss = nn.CrossEntropyLoss()
-    optimizer = SGD(model.parameters(), lr=0.001, momentum=0.9)
-    scheduler = lr_scheduler.StepLR(optimizer, step_size=5, gamma=0.1)
-
-    model, losses, accuracies = train_model(
-        model, train_dataset, test_dataset, loss, optimizer, device, scheduler
-    )
-
-    test_iou = evaluate_dataset_iou_resnet(model, test_dataset, device)
-
-    return model, test_iou
+SPLab_dataset = FastCarotidDatasetSPLab(
+    SPLab_IMGS_PATH, SPLab_LABELS_PATH, TRANSFORMATIONS_CUSTOM, TRANSFORMATIONS_TORCH
+)
+SPLab_dataset_train, _, SPLab_dataset_val, _ = split_dataset(SPLab_dataset, 0.2, 2)
+SPLab_train_loader = DataLoader(
+    SPLab_dataset_train, batch_size=2, shuffle=True, collate_fn=collate_fn
+)
+SPLab_val_loader = DataLoader(
+    SPLab_dataset_val, batch_size=2, shuffle=False, collate_fn=collate_fn
+)
 
 
-def train_frcnn_localization():
-    train_dataset = FastCarotidDataset(
-        TRAIN_IMGS_PATH, TRAIN_LABELS_PATH, TRANSFORMATIONS_TWO
-    )
-    val_dataset = FastCarotidDataset(
-        VALIDATION_IMGS_PATH, VALIDATION_LABELS_PATH, TRANSFORMATIONS_TWO
-    )
-    test_dataset = FastCarotidDataset(
-        TEST_IMGS_PATH, TEST_LABELS_PATH, TRANSFORMATIONS_TWO
-    )
+# ANTIQUE TRANSVERSAL DATA - TRAIN
+ANTIQUE_TRANS_TRAIN_IMGS_PATH = "INSERT_PATH"
+ANTIQUE_TRANS_TRAIN_LABELS_PATH = "INSERT_PATH"
 
-    train_loader = DataLoader(
-        train_dataset, batch_size=2, shuffle=True, collate_fn=utils.collate_fn
-    )
-    val_loader = DataLoader(
-        val_dataset, batch_size=2, shuffle=True, collate_fn=utils.collate_fn
-    )
-    test_loader = DataLoader(
-        test_dataset, batch_size=2, shuffle=True, collate_fn=utils.collate_fn
-    )
+ANTIQUE_trans_dataset_train = FastCarotidDatasetANTIQUE(
+    ANTIQUE_TRANS_TRAIN_IMGS_PATH,
+    ANTIQUE_TRANS_TRAIN_LABELS_PATH,
+    TRANSFORMATIONS_CUSTOM,
+    TRANSFORMATIONS_TORCH,
+)
+ANTIQUE_trans_train_loader = DataLoader(
+    ANTIQUE_trans_dataset_train, batch_size=2, shuffle=False, collate_fn=collate_fn
+)
 
-    model = create_faster_rcnn()
-    device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
+# ANTIQUE TRANSVERSAL DATA - VAL
+ANTIQUE_TRANS_VAL_IMGS_PATH = "INSERT_PATH"
+ANTIQUE_TRANS_VAL_LABELS_PATH = "INSERT_PATH"
 
-    model.to(device)
+ANTIQUE_trans_dataset_val = FastCarotidDatasetANTIQUE(
+    ANTIQUE_TRANS_VAL_IMGS_PATH,
+    ANTIQUE_TRANS_VAL_LABELS_PATH,
+    TRANSFORMATIONS_CUSTOM_SMPL,
+    TRANSFORMATIONS_TORCH,
+)
+ANTIQUE_trans_val_loader = DataLoader(
+    ANTIQUE_trans_dataset_val, batch_size=2, shuffle=False, collate_fn=collate_fn
+)
+
+# ANTIQUE LONGITUDINAL DATA - TRAIN
+ANTIQUE_LONG_TRAIN_IMGS_PATH = "INSERT_PATH"
+ANTIQUE_LONG_TRAIN_LABELS_PATH = "INSERT_PATH"
+
+ANTIQUE_long_dataset_train = FastCarotidDatasetANTIQUE(
+    ANTIQUE_LONG_TRAIN_IMGS_PATH,
+    ANTIQUE_LONG_TRAIN_LABELS_PATH,
+    TRANSFORMATIONS_CUSTOM_SMPL,
+    TRANSFORMATIONS_TORCH,
+)
+ANTIQUE_long_train_loader = DataLoader(
+    ANTIQUE_long_dataset_train, batch_size=2, shuffle=False, collate_fn=collate_fn
+)
+
+# ANTIQUE LONGITUDINAL DATA - VAL
+ANTIQUE_LONG_VAL_IMGS_PATH = "INSERT_PATH"
+ANTIQUE_LONG_VAL_LABELS_PATH = "INSERT_PATH"
+
+ANTIQUE_long_dataset_val = FastCarotidDatasetANTIQUE(
+    ANTIQUE_LONG_VAL_IMGS_PATH,
+    ANTIQUE_LONG_VAL_LABELS_PATH,
+    TRANSFORMATIONS_CUSTOM_SMPL,
+    TRANSFORMATIONS_TORCH,
+)
+ANTIQUE_long_val_loader = DataLoader(
+    ANTIQUE_long_dataset_val, batch_size=2, shuffle=False, collate_fn=collate_fn
+)
+
+
+def train_transverse_fasterrcnn_model():
+    """The approach which has been used for the best transverse Faster R-CNN
+    as defined and described in the thesis.
+    """
+    model = create_faster_rcnn(True)
+    torch_device = device("cuda") if cuda.is_available() else device("cpu")
+
+    model.to(torch_device)
 
     params = [p for p in model.parameters() if p.requires_grad]
-    optimizer = SGD(params, lr=0.001, momentum=0.9)
-    num_epochs = 20
+    optimizer = Adam(params, lr=0.0001)
+    scheduler = lr_scheduler.MultiStepLR(optimizer, [5, 15, 25])
 
     best_model = None
-    best_eval = 0.0
+    best_val_loss = 10 ** 8
 
-    for epoch in range(33):
-        train_one_epoch(model, optimizer, train_loader, device, epoch, print_freq=10)
-        eval = evaluate_dataset_iou_frcnn(model, val_loader, device=device) / len(
-            val_dataset
+    print("Training on the SPLab data...")
+    for epoch in range(EPOCHS):
+        train_logger = train_one_epoch(
+            model, optimizer, SPLab_train_loader, torch_device, epoch, print_freq=200
+        )
+        val_logger = eval_one_epoch(
+            model, SPLab_val_loader, torch_device, print_freq=200
         )
 
-        if eval > best_eval:
-            best_eval = eval
+        print(
+            f"Epoch: {epoch}, SPLab, Train loss: {train_logger.loss.avg}, Train loss_classifier: {train_logger.loss_classifier.avg}, Train loss_box_reg: {train_logger.loss_box_reg.avg}, Train loss_objectness: {train_logger.loss_objectness.avg}"
+        )
+        print(
+            f"Epoch: {epoch}, SPLab, Val. loss: {val_logger.loss.avg}, Val. loss_classifier: {val_logger.loss_classifier.avg}, Val. loss_box_reg: {val_logger.loss_box_reg.avg}, Val. loss_objectness: {val_logger.loss_objectness.avg}"
+        )
+
+        scheduler.step()
+
+        if val_logger.loss.avg < best_val_loss:
+            best_val_loss = val_logger.loss.avg
             best_model = copy.deepcopy(model)
-        print(f"Val eval: {eval}")
 
-    return best_model
+    model.load_state_dict(best_model.state_dict())
+
+    params = [p for p in model.parameters() if p.requires_grad]
+    optimizer = Adam(params, lr=0.0001)
+    scheduler = lr_scheduler.MultiStepLR(optimizer, [5, 15, 25])
+
+    best_model = None
+    best_val_loss = 10 ** 8
+
+    print("Finetuning on the ANTIQUE data...")
+    for epoch in range(EPOCHS):
+        train_logger = train_one_epoch(
+            model,
+            optimizer,
+            ANTIQUE_trans_train_loader,
+            torch_device,
+            epoch,
+            print_freq=200,
+        )
+        val_logger = eval_one_epoch(
+            model, ANTIQUE_trans_train_loader, torch_device, print_freq=200
+        )
+
+        print(
+            f"Epoch: {epoch}, ANTIQUE, Train loss: {train_logger.loss.avg}, Train loss_classifier: {train_logger.loss_classifier.avg}, Train loss_box_reg: {train_logger.loss_box_reg.avg}, Train loss_objectness: {train_logger.loss_objectness.avg}"
+        )
+        print(
+            f"Epoch: {epoch}, ANTIQUE, Val. loss: {val_logger.loss.avg}, Val. loss_classifier: {val_logger.loss_classifier.avg}, Val. loss_box_reg: {val_logger.loss_box_reg.avg}, Val. loss_objectness: {val_logger.loss_objectness.avg}"
+        )
+
+        scheduler.step()
+
+        if val_logger.loss.avg < best_val_loss:
+            best_val_loss = val_logger.loss.avg
+            best_model = copy.deepcopy(model)
+
+    save(best_model.state_dict(), "transverse_localization_model.pt")
 
 
-def main(model_type):
-    if model_type == ModelTypes.RESNET:
-        train_renset_localization()
-    elif model_type == ModelTypes.FRCNN:
-        train_renset_localization()
+def train_longitudinal_fasterrcnn_model():
+    """The approach which has been used for the best longitudinal Faster R-CNN
+    as defined and described in the thesis.
+    """
+    model = create_faster_rcnn(True)
+    torch_device = device("cuda") if cuda.is_available() else device("cpu")
+
+    model.to(torch_device)
+
+    params = [p for p in model.parameters() if p.requires_grad]
+    optimizer = Adam(params, lr=0.0001)
+    scheduler = lr_scheduler.MultiStepLR(optimizer, [5, 15, 25])
+
+    best_model = None
+    best_val_loss = 10 ** 8
+
+    for epoch in range(EPOCHS):
+        train_logger = train_one_epoch(
+            model,
+            optimizer,
+            ANTIQUE_long_train_loader,
+            torch_device,
+            epoch,
+            print_freq=200,
+        )
+        val_logger = eval_one_epoch(
+            model, ANTIQUE_long_val_loader, torch_device, print_freq=200
+        )
+
+        print(
+            f"Epoch: {epoch}, ANTIQUE, Train loss: {train_logger.loss.avg}, Train loss_classifier: {train_logger.loss_classifier.avg}, Train loss_box_reg: {train_logger.loss_box_reg.avg}, Train loss_objectness: {train_logger.loss_objectness.avg}"
+        )
+        print(
+            f"Epoch: {epoch}, ANTIQUE, Val. loss: {val_logger.loss.avg}, Val. loss_classifier: {val_logger.loss_classifier.avg}, Val. loss_box_reg: {val_logger.loss_box_reg.avg}, Val. loss_objectness: {val_logger.loss_objectness.avg}"
+        )
+
+        scheduler.step()
+
+        if val_logger.loss.avg < best_val_loss:
+            best_val_loss = val_logger.loss.avg
+            best_model = copy.deepcopy(model)
+
+    save(best_model.state_dict(), "longitudinal_localization_model.pt")
 
 
 if __name__ == "__main__":
-    args = sys.argv[1:]
-
-    if len(args) != 1:
-        print("Invalid number of parameters.")
-    else:
-        main(args)
+    train_transverse_fasterrcnn_model()
+    train_longitudinal_fasterrcnn_model()

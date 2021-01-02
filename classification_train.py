@@ -63,7 +63,7 @@ def train_classification_model():
     model.to(torch_device)
 
     loss = CrossEntropyLoss()
-    optimizer = SGD(model.parameters(), lr=0.001, momentum=0.99)
+    optimizer = SGD(model.parameters(), lr=0.0001, momentum=0.95)
     scheduler = ReduceLROnPlateau(optimizer, patience=3)
 
     model, losses, accuracies = train_model(
@@ -78,7 +78,7 @@ def train_classification_model():
     )
 
     evaluate_classification_model(model, test_loader, loss, torch_device)
-    save(model.state_dict(), "classification_model.pth")
+    save(model.state_dict(), "classification_model.pt")
 
 
 if __name__ == "__main__":
