@@ -6,27 +6,35 @@ from carotids.localization.frcnn_dataset import FastCarotidDatasetEval
 from carotids.localization.models import create_faster_rcnn
 
 DEVICE = device("cpu")
-TRANSFORMATIONS = Compose(
-    [ToTensor(), Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])]
-)
+TRANSFORMATIONS = Compose([ToTensor()])
 
-PATH_TO_DATA = "/home/martin/Documents/cartroids/data_samples/localization_samples"
-PATH_TO_MODEL = "/home/martin/Documents/cartroids/models/localization_model.pth"
+PATH_TO_TRANS_MODEL = "INSERT_PATH"
+PATH_TO_TRANS_DATA = "data_samples/localization_samples/transverse"
+
+PATH_TO_LONG_MODEL = "INSERT_PATH"
+PATH_TO_LONG_DATA = "data_samples/localization_samples/longitudinal"
 
 
 @no_grad()
-def localization_example_use() -> None:
-    """Example usage of localization model. Load model from path selected by 
-    parameter PATH_TO_MODEL. Evaluates the images in the folder specified by 
-    the PATH_TO_DATA parameter. Prints name of the file and coordinates of the
+def localization_example_use(path_to_model: str, path_to_data: str) -> None:
+    """Example usage of localization model. Load model from path selected by
+    parameter path_to_model. Evaluates the images in the folder specified by
+    the path_to_data parameter. Prints name of the file and coordinates of the
     most probable carotid on the image with its score.
+
+    Parameters
+    ----------
+    path_to_model : str
+        Path to the model.
+    path_to_data : str
+        Path to the data.
     """
     model = create_faster_rcnn()
-    model.load_state_dict(load(PATH_TO_MODEL, map_location=DEVICE))
+    model.load_state_dict(load(path_to_model, map_location=DEVICE))
     model.to(DEVICE)
     model.eval()
 
-    dataset = FastCarotidDatasetEval(PATH_TO_DATA, TRANSFORMATIONS)
+    dataset = FastCarotidDatasetEval(path_to_data, TRANSFORMATIONS)
     loader = DataLoader(dataset, batch_size=1, shuffle=False)
 
     for image_tensor, image_name in loader:
@@ -42,4 +50,7 @@ def localization_example_use() -> None:
 
 
 if __name__ == "__main__":
-    localization_example_use()
+    print("Transverse data:")
+    localization_example_use(PATH_TO_TRANS_MODEL, PATH_TO_TRANS_DATA)
+    print("Longitudinal data:")
+    localization_example_use(PATH_TO_LONG_MODEL, PATH_TO_LONG_DATA)
