@@ -3,7 +3,7 @@ from torchvision import models
 
 
 def create_small_cnn(classes: int) -> Sequential:
-    """Creates a convolutional neural network.
+    """Creates the small convolutional neural network.
 
     Parameters
     ----------
@@ -13,7 +13,7 @@ def create_small_cnn(classes: int) -> Sequential:
     Returns
     -------
     Sequential
-        Returns small convolutional neural network.
+        Returns the small convolutional neural network.
     """
     model = Sequential(
         Conv2d(3, 4, 5),

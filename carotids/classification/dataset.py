@@ -10,11 +10,13 @@ class ClassificationDataset(Dataset):
     """Represents a dateset used for classification.
 
     Reads names of the files for all classes and creates labels.
-    Loads image on when it is gotten.
+    Loads the image when it is requested.
     """
 
     def __init__(self, img_dirs: dict, transformations: list) -> None:
-        """Initializes a classification dataset.
+        """Initializes a classification dataset. The img_dirs
+        should contain class as a key and path to the folder
+        containing the samples as a value. 
 
         Parameters
         ----------
@@ -52,7 +54,7 @@ class ClassificationDataset(Dataset):
         return data_files, labels
 
     def __getitem__(self, index: int) -> tuple:
-        """Gets item from the dataset at a specified index.
+        """Gets item from the dataset at the specified index.
 
         Parameters
         ----------
@@ -62,7 +64,7 @@ class ClassificationDataset(Dataset):
         Returns
         -------
         tuple
-            Image processed into a tensor with a label.
+            Transformed and preprocessed image into a tensor with a label.
         """
         label = self.labels[index]
 
@@ -70,7 +72,7 @@ class ClassificationDataset(Dataset):
         return self.transformations(img), tensor(label)
 
     def __len__(self) -> int:
-        """Returns a length of the dataset.
+        """Returns the length of the dataset.
 
         Returns
         -------

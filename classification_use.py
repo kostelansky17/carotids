@@ -24,8 +24,8 @@ PATH_TO_MODEL = "INSERT_PATH"
 @no_grad()
 def classification_example_use() -> None:
     """Example usage of classification model. Load model from path selected by
-    parameter PATH_TO_MODEL. Evaluates the images in the folder specified by
-    the PATH_TO_DATA parameter. Prints the name of the file and probabilities for
+    variable PATH_TO_MODEL. Evaluates the images in the folder specified by
+    the PATH_TO_DATA variable. Prints the name of the file and probabilities for
     each class.
     """
     model = create_resnet50(CLASSES)

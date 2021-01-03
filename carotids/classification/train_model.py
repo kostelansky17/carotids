@@ -39,15 +39,13 @@ def train_model(
         Device on which is the model.
     scheduler : Union[None, _LRScheduler]
         Selected scheduler of the learning rate.
-    val_split : float
-        Ratio of the train-validation split.
     num_epochs : int
         Number of training epochs.
 
     Returns
     -------
     tuple
-        Model with best loss and the loss and accuracy metrics from observed
+        Model with best validation loss observed
         during the training.
     """
     losses = {"train": [], "val": []}
