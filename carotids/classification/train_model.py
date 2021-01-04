@@ -5,7 +5,7 @@ from torch import device, set_grad_enabled
 from torch.nn import Module
 from torch.nn.modules.loss import _Loss
 from torch.optim.optimizer import Optimizer
-from torch.optim.lr_scheduler import _LRScheduler
+from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torch.utils.data import DataLoader
 
 from carotids.metrics import accuracy_torch, evaluate_classification_model
@@ -18,10 +18,11 @@ def train_model(
     loss: _Loss,
     optimizer: Optimizer,
     device: device,
-    scheduler: Union[None, _LRScheduler] = None,
+    scheduler: Union[None, ReduceLROnPlateau] = None,
     num_epochs: int = 75,
 ) -> tuple:
     """Trains the model on the training data.
+    The model with the lowest loss on validation loader is returned.
 
     Parameters
     ----------
@@ -37,7 +38,7 @@ def train_model(
         Selected optimizer which updates weights of the model
     device : device
         Device on which is the model.
-    scheduler : Union[None, _LRScheduler]
+    scheduler : Union[None, ReduceLROnPlateau]
         Selected scheduler of the learning rate.
     num_epochs : int
         Number of training epochs.

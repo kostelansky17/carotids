@@ -3,7 +3,7 @@ from torchvision import models
 
 
 def create_small_cnn(classes: int) -> Sequential:
-    """Creates the small convolutional neural network.
+    """Creates Small convolutional neural network.
 
     Parameters
     ----------
@@ -13,7 +13,7 @@ def create_small_cnn(classes: int) -> Sequential:
     Returns
     -------
     Sequential
-        Returns the small convolutional neural network.
+        Returns Small convolutional neural network.
     """
     model = Sequential(
         Conv2d(3, 4, 5),
@@ -40,6 +40,7 @@ def create_vgg(
         Flag to create a pretrained model on the ImageNet dataset.
     all_layers : bool
         Flag to set the requires_grad parameter in all layers.
+        If set to true all the layers are trained.
 
     Returns
     -------
@@ -70,6 +71,7 @@ def create_resnet50(
         Flag to create a pretrained model on the ImageNet dataset.
     all_layers : bool
         Flag to set the requires_grad parameter in all layers.
+        If set to true all the layers are trained.
 
     Returns
     -------

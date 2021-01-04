@@ -16,7 +16,7 @@ class ClassificationDataset(Dataset):
     def __init__(self, img_dirs: dict, transformations: list) -> None:
         """Initializes a classification dataset. The img_dirs
         should contain class as a key and path to the folder
-        containing the samples as a value. 
+        containing the samples as a value.
 
         Parameters
         ----------
