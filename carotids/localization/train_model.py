@@ -13,7 +13,7 @@ def train_one_epoch(
     device: device,
     epoch: int,
     print_freq: int,
-):
+) -> MetricLogger:
     """Trains Faster R-CNN for one epoch on the data loader.
 
     Parameters
