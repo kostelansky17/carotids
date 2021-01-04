@@ -6,9 +6,8 @@ from carotids.preprocessing import load_img, load_position
 from carotids.utils import recompute_labels
 
 
-class ResnetCarotidDataset(Dataset):
-    """Represents a dateset used for training localization CNN.
-
+class ResnetCarotidDatasetSPLab(Dataset):
+    """Represents a SPLab dateset used for training localization CNN.
     Reads names od the images and labels. The data are loaded when an item is
     gotten.
     """
@@ -40,11 +39,11 @@ class ResnetCarotidDataset(Dataset):
         ----------
         index : int
             Index of an item to return.
-        
+
         Returns
         -------
         tuple
-            Image processed into a tensor and a tensor with coordinates of a 
+            Image processed into a tensor and a tensor with coordinates of a
             bounding box.
         """
         img = load_img(self.data_path, self.data_files[index])

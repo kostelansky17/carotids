@@ -7,8 +7,9 @@ from carotids.localization.utils import MetricLogger, reduce_dict
 
 def eval_one_epoch(
     model: Module, data_loader: DataLoader, device: device, print_freq: int
-):
-    """Evaluates Faster R-CNN on the dataloader.
+) -> MetricLogger:
+    """Evaluates Faster R-CNN on the dataloader. Returns MetricLogger
+    containing statistics about model performance on data loader.
 
     Parameters
     ----------
@@ -19,7 +20,7 @@ def eval_one_epoch(
     device : device
         Device on which is the model.
     print_freq : int
-        The printing frequency during the training.
+        The printing frequency during the evaluation.
 
     Returns
     -------

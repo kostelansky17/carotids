@@ -11,7 +11,7 @@ VERTICAL_FLIP = RandomVerticalFlip(1.0)
 class LocRandomHorizontalFlip:
     """Random horizontal flip.
 
-    Represents random horizontal flip which transforms image and bounding box.
+    Represents random horizontal flip which transforms an image and a bounding box.
     """
 
     def __init__(self, p: float = 0.5):
@@ -56,7 +56,7 @@ class LocRandomHorizontalFlip:
 class LocRandomVerticalFlip:
     """Random vertical flip.
 
-    Represents random vertical flip which transforms image and bounding box.
+    Represents random vertical flip which transforms an image and a bounding box.
     """
 
     def __init__(self, p: float = 0.5):
@@ -101,7 +101,7 @@ class LocRandomVerticalFlip:
 class LocCrop:
     """Random crop.
 
-    Represents random vertical crop which transforms image and bounding box. 
+    Represents random crop which transforms image and bounding box.
     Crops an input image so that whole object is perserved.
     """
 
@@ -137,18 +137,11 @@ class LocCrop:
             if bounding_box[0] > 0 and bounding_box[2] < w:
                 crop_x0 = randint(0, bounding_box[0])
                 crop_w = randint(bounding_box[2], w) - crop_x0
-                
-                img = crop(
-                    img,
-                    0,
-                    crop_x0,
-                    h,
-                    crop_w
-                )
+
+                img = crop(img, 0, crop_x0, h, crop_w)
 
                 x0 = bounding_box[0] - crop_x0
                 x1 = bounding_box[2] - crop_x0
-            
 
             w, h = img.size
             if bounding_box[1] > 0 and bounding_box[3] < h:
@@ -173,12 +166,14 @@ class LocReshape:
     """Random reshape.
 
     Represents random reshape, which transforms image and bounding box.
+    It rescales the size of the image by random ratio from a prespecified
+    interval.
     """
 
     def __init__(
         self, p: float = 0.5, reshape_lower: float = 0.5, reshape_upper: float = 2
     ):
-        """Initializes a random crop.
+        """Initializes a random reshape.
 
         Parameters
         ----------
@@ -194,7 +189,7 @@ class LocReshape:
         self.reshape_upper = reshape_upper
 
     def __call__(self, img: Image, bounding_box: array) -> tuple:
-        """Applies random crop on an image and a bounding box.
+        """Applies random reshape on an image and a bounding box.
 
         Parameters
         ----------
@@ -222,6 +217,8 @@ class LocReshape:
 class LocCompose:
     def __init__(self, transformations: list):
         """Initializes a composition of custom transformations.
+        Applies list of localization transformations on an
+        image and a bounding box.
 
         Parameters
         ----------
@@ -239,7 +236,7 @@ class LocCompose:
             Image to be processed.
         bounding_box : tuple
             Bounding box to be processed.
-        
+
         Returns
         -------
         tuple

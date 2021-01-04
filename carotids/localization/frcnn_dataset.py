@@ -54,7 +54,9 @@ class FastCarotidDatasetSPLab(Dataset):
     """Represents a dateset used for training Faster R-CNN.
 
     Reads names od the images and labels from SPLab dataset. The data (image and
-    label file) are loaded when an item is being gotten.
+    label file) are loaded when an item is being gotten. The lables and images
+    are in the separate folders. Both folder should contain the same number
+    of files. Name of a label and an image needs to be the same for a sample.
     """
 
     def __init__(
@@ -133,7 +135,8 @@ class FastCarotidDatasetANTIQUE(Dataset):
 
     Reads names od the images and labels from ANTIQUE dataset. The images are
     loaded when an item is being gotten and the labels are red when the Dataset
-    is initialized.
+    is initialized. The images are expected to be in a separate folder and
+    the path to JSON files with labels in COCO format need to be provided.
     """
 
     def __init__(
@@ -210,10 +213,8 @@ class FastCarotidDatasetANTIQUE(Dataset):
 
 class FastCarotidDatasetEval(Dataset):
     """Represents a dateset used to store data which are the input into
-    Faster R-CNN.
-
-    Reads names od the images. The data are loaded when an item is
-    gotten.
+    Faster R-CNN. Reads all files in a folder. The data are loaded when an
+    item is gotten.
     """
 
     def __init__(self, data_path: int, transformations: Compose) -> None:

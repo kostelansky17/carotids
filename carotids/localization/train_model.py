@@ -14,7 +14,7 @@ def train_one_epoch(
     epoch: int,
     print_freq: int,
 ):
-    """Trains one epoch on the training data.
+    """Trains Faster R-CNN for one epoch on the data loader.
 
     Parameters
     ----------
@@ -48,7 +48,6 @@ def train_one_epoch(
         loss_dict = model(images, targets)
         losses = sum(loss for loss in loss_dict.values())
 
-        # reduce losses over all GPUs for logging purposes
         loss_dict_reduced = reduce_dict(loss_dict)
         losses_reduced = sum(loss for loss in loss_dict_reduced.values())
 

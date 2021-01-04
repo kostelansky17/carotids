@@ -1,5 +1,5 @@
 """
-The code in this file is from project vision from PyTorch. The original project 
+The code in this file is from project vision by PyTorch. The original project 
 can be found here: https://github.com/pytorch/vision.
 """
 

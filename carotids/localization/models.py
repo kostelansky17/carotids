@@ -7,7 +7,9 @@ from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 def create_resnet_model(
     arch: str = "resnet50", pretrained: bool = True, all_layers: bool = True
 ) -> Module:
-    """Creates ResNet neural network for localization.
+    """Creates ResNet neural network for localization. The CNN is able
+    to predict a position of single object with four neurons in the last
+    layer.
 
     Parameters
     ----------
@@ -17,7 +19,8 @@ def create_resnet_model(
         Flag to create a pretrained model on the ImageNet dataset.
     all_layers : bool
         Flag to set the requires_grad parameter in all layers.
-    
+        If set to true all the layers are trained.
+
     Returns
     -------
     Module
@@ -35,9 +38,10 @@ def create_resnet_model(
 
 
 def create_faster_rcnn(
-    pretrained: bool = False, trainable_backbone_layers: int = 3
+    pretrained: bool = False, trainable_backbone_layers: int = 5
 ) -> FasterRCNN:
-    """Creates Faster R-CNN model.
+    """Creates Faster R-CNN model able to detect objects of
+    a single class.
 
     Parameters
     ----------
