@@ -15,7 +15,7 @@ def crop_image(img: Image) -> Image:
     ----------
     img : Image
         Image to be processed.
-    
+
     Returns
     -------
     Image
@@ -36,7 +36,7 @@ def load_position(dir_path: str, label_file: str) -> array:
         Folder of the file.
     label_file : str
         File name.
-    
+
     Returns
     -------
     array
@@ -63,7 +63,7 @@ def load_imgs_dir(dir_path: str) -> list:
     ----------
     dir_path : str
         Folder containing images to load.
- 
+
     Returns
     -------
     list
