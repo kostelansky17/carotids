@@ -20,19 +20,19 @@ ResNet50 model and the training process
 is described by **categorization_train.py**
 Th model is able to predict the type
 of the ultrasound image. The four categories
-are longitudinal, transverse, Doppler, and conical. How to predict categories on sample images is described in **categorization_use.py**
+are longitudinal, transverse, Doppler, and conical. How to predict categories of sample images is described in **categorization_use.py**
 
 ### Localization
 
-To locate the carotid artery on a ultrasound image,
-two Faster R-CNNs are trained in **localization_train.py**. The trained model can be run as in
+To locate the carotid artery on an ultrasound image,
+two Faster R-CNNs are trained in **localization_train.py**. The trained model can be run as is
 shown in the file **localization_use.py**.
 
 ### Segmentation
 
 For segmentation, there are two example files as well.
 The training script **segmentation_train.py**, 
-created two U-nets, each to segment different types
+created two U-nets, each to segment different type
 (longitudinal and transverse) of ultrasound carotid artery images. The possible later usage is 
 shown in **segmentation_use.py**.
 
