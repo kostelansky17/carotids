@@ -37,7 +37,7 @@ class SegmentationDataset(Dataset):
         transformations_torch : Compose
             Composition of torch segmentation transformations.
         plaque_with_wall : bool
-            If True, the plaque and wall clases are united.
+            If True, the plaque and wall classes are united.
         """
         self.data_path = data_path
         self.labels_path = labels_path

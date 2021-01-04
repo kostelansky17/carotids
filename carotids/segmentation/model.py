@@ -13,11 +13,11 @@ from torch.nn import (
 class Unet(Module):
     """U-net model.
 
-    Represents implementation of the U-net model for image segmentation.
+    Represents implementation of U-net model for image segmentation.
     """
 
     def __init__(self, number_of_classes: int) -> None:
-        """Initializes a U-net model.
+        """Initializes U-net model.
 
         Parameters
         ----------

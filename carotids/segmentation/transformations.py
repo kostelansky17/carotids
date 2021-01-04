@@ -128,10 +128,10 @@ class SegCrop:
         tuple
             Transformed image and mask.
         """
-        mask_indicies = where((asarray(mask) == [255, 255, 255]).any(axis=2))
+        mask_indices = where((asarray(mask) == [255, 255, 255]).any(axis=2))
 
-        x1, y1 = mask_indicies[1].min(), mask_indicies[0].min()
-        x2, y2 = mask_indicies[1].max(), mask_indicies[0].max()
+        x1, y1 = mask_indices[1].min(), mask_indices[0].min()
+        x2, y2 = mask_indices[1].max(), mask_indices[0].max()
 
         width, height = img.size
 
@@ -151,7 +151,7 @@ class SegCrop:
 
 class SegCompose:
     def __init__(self, transformations: list):
-        """Initializes a composition of custom transformations.
+        """Initializes a composition of custom segmentation transformations.
 
         Parameters
         ----------

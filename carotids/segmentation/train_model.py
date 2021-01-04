@@ -18,7 +18,7 @@ def train_model(
     scheduler: _LRScheduler,
     num_epochs: int,
 ) -> Module:
-    """Trains the model on the training data.
+    """Trains the segmentation model on the training data.
 
     Parameters
     ----------
@@ -44,7 +44,7 @@ def train_model(
     Returns
     -------
     tuple
-        Model with best validationloss during the training.
+        Model with best validation loss during the training.
     """
     train_size = len(train_loader.dataset)
     val_size = len(val_loader.dataset)
