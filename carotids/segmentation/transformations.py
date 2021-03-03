@@ -9,10 +9,197 @@ from torchvision.transforms import (
     RandomRotation,
     Resize,
 )
-from torchvision.transforms.functional import crop
+from torchvision.transforms.functional import (
+    adjust_brightness,
+    adjust_contrast,
+    adjust_gamma,
+    crop,
+    rotate,
+)
 
 HORIZONTAL_FLIP = RandomHorizontalFlip(1.0)
 VERTICAL_FLIP = RandomVerticalFlip(1.0)
+
+
+class SegRandomRotation:
+    """Random rotation.
+
+    Represents random rotation which transforms image and segmentation mask.
+    """
+
+    def __init__(self, p: float = 0.5, min_angle: int = 0, max_angle: int = 360):
+        """Initializes a random rotation.
+
+        Parameters
+        ----------
+        p : float
+            Probability with which transformation is applied.
+        min_angle : int
+            Minimal angle bound for rotation (inclusive).
+        max_angle : int
+            Max angle bound for rotation (exclusive).
+        """
+        self.p = p
+        self.min_angle = min_angle
+        self.max_angle = max_angle
+
+    def __call__(self, img: Image, mask: Tensor) -> tuple:
+        """Applies random rotation on an image and a mask.
+
+        Parameters
+        ----------
+        img : Image
+            Image to transform.
+        mask : Tensor
+            Mask to transform.
+
+        Returns
+        -------
+        tuple
+            Transformed image and mask.
+        """
+        if uniform() <= self.p:
+            rotation_angle = randint(self.min_angle, self.max_angle)
+            img = rotate(img, rotation_angle)
+            mask = rotate(mask, rotation_angle)
+
+        return img, mask
+
+
+class SegRandomContrast:
+    """Random contrast.
+
+    Represents random contrast which transforms image.
+    """
+
+    def __init__(
+        self, p: float = 0.5, min_contrast: int = 0.75, max_contrast: int = 1.25
+    ):
+        """Initializes a random contrast.
+
+        Parameters
+        ----------
+        p : float
+            Probability with which transformation is applied.
+        min_contrast : int
+            Minimal contrast factor bound for transformation.
+        max_contrast : int
+            Max contrast factor for transformation.
+        """
+        self.p = p
+        self.min_contrast = min_contrast
+        self.max_contrast = max_contrast
+
+    def __call__(self, img: Image, mask: Tensor) -> tuple:
+        """Applies contrast on an image.
+
+        Parameters
+        ----------
+        img : Image
+            Image to transform.
+        mask : Tensor
+            Mask to pass.
+
+        Returns
+        -------
+        tuple
+            Transformed image and original mask.
+        """
+        if uniform() <= self.p:
+            contrast_factor = uniform(self.min_contrast, self.max_contrast)
+            img = adjust_contrast(img, contrast_factor)
+
+        return img, mask
+
+
+class SegRandomGammaCorrection:
+    """Random gamma correction.
+
+    Represents random gamma correction which transforms image.
+    """
+
+    def __init__(self, p: float = 0.5, min_gamma: int = 0.75, max_gamma: int = 1.25):
+        """Initializes a random gamma correction.
+
+        Parameters
+        ----------
+        p : float
+            Probability with which transformation is applied.
+        min_gamma : int
+            Minimal gamma correction bound for transformation.
+        max_gamma : int
+            Max gamma correction for transformation.
+        """
+        self.p = p
+        self.min_gamma = min_gamma
+        self.max_gamma = max_gamma
+
+    def __call__(self, img: Image, mask: Tensor) -> tuple:
+        """Applies gamma correction on an image.
+
+        Parameters
+        ----------
+        img : Image
+            Image to transform.
+        mask : Tensor
+            Mask to pass.
+
+        Returns
+        -------
+        tuple
+            Transformed image and original mask.
+        """
+        if uniform() <= self.p:
+            gamma = uniform(self.min_gamma, self.max_gamma)
+            img = adjust_gamma(img, gamma)
+
+        return img, mask
+
+
+class SegRandomBrightness:
+    """Random brightness.
+
+    Represents random brightness which transforms image.
+    """
+
+    def __init__(
+        self, p: float = 0.5, min_brightness: int = 0.75, max_brightness: int = 1.25
+    ):
+        """Initializes a random brightness.
+
+        Parameters
+        ----------
+        p : float
+            Probability with which transformation is applied.
+        min_brightness : int
+            Minimal brightness factor bound for transformation.
+        max_brightness : int
+            Max brightness factor for transformation.
+        """
+        self.p = p
+        self.min_brightness = min_brightness
+        self.max_brightness = max_brightness
+
+    def __call__(self, img: Image, mask: Tensor) -> tuple:
+        """Applies brightness on an image.
+
+        Parameters
+        ----------
+        img : Image
+            Image to transform.
+        mask : Tensor
+            Mask to pass.
+
+        Returns
+        -------
+        tuple
+            Transformed image and original mask.
+        """
+        if uniform() <= self.p:
+            brightness_factor = uniform(self.min_brightness, self.max_brightness)
+            img = adjust_brightness(img, brightness_factor)
+
+        return img, mask
 
 
 class SegRandomHorizontalFlip:
