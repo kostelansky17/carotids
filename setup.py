@@ -1,11 +1,10 @@
 import setuptools
  
 setuptools.setup(
-    name="carotids-kostelansky", # Replace with your own username
+    name="carotids-kostelansky",
     version="1.0",
     author="Martin Kostelansky",
     author_email="martin.kostelansky@fel.cvut.cz",
-    description="A small example package",
     project_urls={
         "github": "https://github.com/kostelansky17/carotids",
     },

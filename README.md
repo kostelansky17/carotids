@@ -24,7 +24,7 @@ are longitudinal, transverse, Doppler, and conical. How to predict categories of
 
 ### Localization
 
-To localize the carotid artery on an ultrasound image,
+To localize the common carotid artery on an ultrasound image,
 two Faster R-CNNs are trained in **localization_train.py**. The trained model can be run as is shown in the file **localization_use.py**.
 
 ### Segmentation
@@ -48,4 +48,14 @@ The simple use case with sample data can be found in this repository as well
 The work is implemented in **Python 3.7** and **PyTorch 1.6**. The 
 PyTorch version needs to be met to load the models properly.
 
-Created by Martin Kostelansky in 2020 and 2021.
+## Installation guide
+
+1. Download the project.
+2. Go to the root directory.
+3. Install the package:
+    ```
+    python setup.py install
+    ```
+
+
+Created by Martin Kostelansky (*martin.kostelansky@fel.cvut.cz*)  in 2020 and 2021.
