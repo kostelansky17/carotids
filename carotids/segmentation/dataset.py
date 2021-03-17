@@ -155,19 +155,19 @@ class SegmentationEvaluationDataset(Dataset):
         Returns
         -------
         tuple
-            Returns the processed image, the the original one, and if the folder
-            with the references was defined, the ground truth is returned as 
-            well as an image.
+            Returns the processed image, the original one, its name, and if the
+            folder with the references was defined, the ground truth is returned
+            as well as an image.
         """
         img = load_img(self.data_path, self.img_files[index])
         img_torch = self.transformations(img)
 
         if self.labels_path is not None:
-            label = load_img(self.data_path, self.img_files[index])
+            label = load_img(self.labels_path, self.img_files[index])
 
-            return img_torch, img, label
+            return img_torch, img, self.img_files[index], label
 
-        return img_torch, img
+        return img_torch, img, self.img_files[index]
 
     def __len__(self) -> int:
         """Returns a length of the dataset.
