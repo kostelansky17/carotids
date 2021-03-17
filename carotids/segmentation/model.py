@@ -1,13 +1,5 @@
 from torch import cat, tensor
-from torch.nn import (
-    BatchNorm2d,
-    Conv2d,
-    MaxPool2d,
-    Module,
-    PReLU,
-    Sequential,
-    Upsample,
-)
+from torch.nn import BatchNorm2d, Conv2d, MaxPool2d, Module, PReLU, Sequential, Upsample
 
 
 class Unet(Module):
@@ -16,26 +8,62 @@ class Unet(Module):
     Represents implementation of U-net model for image segmentation.
     """
 
-    def __init__(self, number_of_classes: int) -> None:
+    def __init__(
+        self,
+        number_of_classes: int,
+        conv_kernel_size: tuple = (3, 3),
+        conv_stride: int = 1,
+        conv_padding: int = 1,
+        pool_kernel_size: int = 2,
+        up_scale_factor: int = 2,
+    ) -> None:
         """Initializes U-net model.
 
         Parameters
         ----------
         number_of_classes : int
             Number of classes in segmentation
+        kernel_size : tuple
+            Size of a kernel in a convolutional layer.
+        stride : int
+            Stride used in a convolutional layer.
+        padding : int
+            Number of padded pixels in a convolutional layer.
+        pool_kernel_size : int
+            Size of a kernel in a maxpooling layer.
+        up_scale_factor : int
+            Scale factor of an upsampling.
         """
         super(Unet, self).__init__()
 
-        self.L0 = LeftBlock(3, 64)
-        self.L1 = LeftBlock(64, 128)
-        self.L2 = LeftBlock(128, 256)
-        self.L3 = LeftBlock(256, 512)
-        self.L4 = LeftBlock(512, 1024)
+        self.L0 = LeftBlock(
+            3, 64, conv_kernel_size, conv_stride, conv_padding, pool_kernel_size
+        )
+        self.L1 = LeftBlock(
+            64, 128, conv_kernel_size, conv_stride, conv_padding, pool_kernel_size
+        )
+        self.L2 = LeftBlock(
+            128, 256, conv_kernel_size, conv_stride, conv_padding, pool_kernel_size
+        )
+        self.L3 = LeftBlock(
+            256, 512, conv_kernel_size, conv_stride, conv_padding, pool_kernel_size
+        )
+        self.L4 = LeftBlock(
+            512, 1024, conv_kernel_size, conv_stride, conv_padding, pool_kernel_size
+        )
 
-        self.R3 = RightBlock(1024, 512)
-        self.R2 = RightBlock(512, 256)
-        self.R1 = RightBlock(256, 128)
-        self.R0 = RightBlock(128, 64)
+        self.R3 = RightBlock(
+            1024, 512, conv_kernel_size, conv_stride, conv_padding, up_scale_factor
+        )
+        self.R2 = RightBlock(
+            512, 256, conv_kernel_size, conv_stride, conv_padding, up_scale_factor
+        )
+        self.R1 = RightBlock(
+            256, 128, conv_kernel_size, conv_stride, conv_padding, up_scale_factor
+        )
+        self.R0 = RightBlock(
+            128, 64, conv_kernel_size, conv_stride, conv_padding, up_scale_factor
+        )
 
         self.last_layer = Conv2d(64, number_of_classes, kernel_size=1)
 
@@ -76,10 +104,9 @@ class ConvBlock(Module):
         self,
         in_channels: int,
         out_channels: int,
-        kernel_size: tuple = (3, 3),
-        stride: int = 1,
-        padding: int = 1,
-        dropout: float = 0.25,
+        kernel_size: tuple,
+        stride: int,
+        padding: int,
     ):
         """Initializes a Block of convolutional layers.
 
@@ -134,10 +161,10 @@ class LeftBlock(Module):
         self,
         in_channels: int,
         out_channels: int,
-        kernel_size: tuple = (3, 3),
-        stride: int = 1,
-        padding: int = 1,
-        pool_kernel_size: int = 2,
+        kernel_size: tuple,
+        stride: int,
+        padding: int,
+        pool_kernel_size: int,
     ):
         """Initializes a Left Block.
 
@@ -192,10 +219,10 @@ class RightBlock(Module):
         self,
         in_channels: int,
         out_channels: int,
-        kernel_size: tuple = (3, 3),
-        stride: int = 1,
-        padding: int = 1,
-        scale_factor: int = 2,
+        kernel_size: tuple,
+        stride: int,
+        padding: int,
+        up_scale_factor: int,
     ):
         """Initializes a Left Block.
 
@@ -211,13 +238,13 @@ class RightBlock(Module):
             Stride used in a convolutional layer.
         padding : int
             Number of padded pixels in a convolutional layer.
-        scale_factor : int
+        up_scale_factor : int
             Scale factor of an upsampling.
         """
         super(RightBlock, self).__init__()
 
         self.up_layer = Sequential(
-            Upsample(scale_factor=scale_factor, mode="bilinear", align_corners=True),
+            Upsample(scale_factor=up_scale_factor, mode="bilinear", align_corners=True),
             ConvBlock(in_channels, out_channels, kernel_size, stride, padding),
         )
         self.conv_layers = ConvBlock(
