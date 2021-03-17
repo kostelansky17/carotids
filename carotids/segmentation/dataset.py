@@ -104,7 +104,7 @@ class SegmentationDataset(Dataset):
         Tensor
             Tensor label.
         """
-        mask = cat((1, *label.shape[1:]), label)
+        mask = cat(zeros(1, *label.shape[1:]), label)
         mask = mask.argmax(0)
 
         if self.plaque_with_wall:
