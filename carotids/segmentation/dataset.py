@@ -1,6 +1,6 @@
 from os import listdir
 
-from torch import cat, int64, tensor, Tensor, unsqueeze, zeros
+from torch import cat, int64, Tensor, unsqueeze, zeros
 from torch.nn.functional import one_hot
 from torch.utils.data.dataset import Dataset
 from torchvision.transforms import Compose
@@ -104,7 +104,7 @@ class SegmentationDataset(Dataset):
         Tensor
             Tensor label.
         """
-        mask = cat((zeros(1, 512, 512), label))
+        mask = cat((1, *label.shape[1:]), label)
         mask = mask.argmax(0)
 
         if self.plaque_with_wall:
