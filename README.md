@@ -43,19 +43,16 @@ the thesis are available for download from
 The simple use case with sample data can be found in this repository as well
 (sample data are in folder data_samples).
 
-## Implementation details
+## Implementation details, requirements & installation
 
-The work is implemented in **Python 3.7** and **PyTorch 1.6**. The 
-PyTorch version needs to be met to load the models properly.
-
-## Installation guide
-
-1. Download the project.
-2. Go to the root directory.
-3. Install the package:
-    ```
-    python setup.py install
-    ```
+The work is primarily implemented in **Python 3** and **PyTorch**. 
+The recommended version of **Python** is **>=3.7**. To a standard conda
+environment, you will need **PyTorch** (version **>=1.6** id needed to load the 
+models properly) and **Torchvision** (version **>=0.9**).
+The package carotids can be then installed with command:
+```
+pip install git+https://github.com/kostelansky17/carotids.git
+```
 
 
 Created by Martin Kostelansky (*martin.kostelansky@fel.cvut.cz*)  in 2020 and 2021.
