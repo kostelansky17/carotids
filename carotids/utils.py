@@ -1,8 +1,9 @@
-from numpy import asarray
+from numpy import arange, asarray, concatenate
+from numpy.random import randint, seed
 from PIL import Image
 from torch import FloatTensor, manual_seed, randn, sqrt, tensor
 from torch.utils.data import DataLoader, random_split
-from torch.utils.data.dataset import Dataset
+from torch.utils.data.dataset import Dataset, Subset
 
 
 class GaussianNoiseTransform(object):
@@ -218,3 +219,67 @@ def recompute_labels(
     y0, y1 = y0 * (img_height / target_height), y1 * (img_height / target_height)
 
     return FloatTensor([x0, y0, x1, y1])
+
+
+from numpy import arange, asarray, concatenate
+from numpy.random import randint, seed
+from PIL import Image
+from torch import FloatTensor, manual_seed, randn, sqrt, tensor
+from torch.utils.data import DataLoader, random_split
+from torch.utils.data.dataset import Dataset, Subset
+
+
+def get_cross_validation_kth_fold(
+    dataset: Dataset, k: int, n: int, start_seed: int = 17
+) -> tuple:
+    """Splits the dataset into train and test subsets, accordingly to the 
+    selected number of the cross-validation fold.
+
+    Parameters
+    ----------
+    dataset: Dataset
+        Dataset to split in.
+    k : int
+        Number of the fold to return.
+    n : int
+        Number of folds in the cross-validation.
+    seed : int
+        seed
+    
+    Returns
+    -------
+    tuple
+        The kth cross-validation fold.
+    """
+    seed(start_seed)
+    ids = arange(len(dataset))
+    split_size = int(len(dataset) / n)
+
+    split_train_ids = concatenate((ids[: split_size * k], ids[split_size * (k + 1) :]))
+    split_test_ids = ids[split_size * k : split_size * (k + 1)]
+
+    train_subdatset = Subset(dataset, split_train_ids)
+    test_subdatset = Subset(dataset, split_test_ids)
+
+    return train_subdatset, test_subdatset
+
+
+def get_cross_validation_folds(dataset: Dataset, n: int, seed: int = 17) -> list:
+    """Splits dataset into n cross-validation folds. Returns an array with 
+    tuples composed of train and test sub-datasets. 
+
+    Parameters
+    ----------
+    dataset: Dataset
+        Dataset to split in the cross-validation folds.
+    n : int
+        Number of folds in the cross-validation.
+    seed : int
+        seed
+    
+    Returns
+    -------
+    list
+        An array with n cross-validation folds.
+    """
+    return [get_cross_validation_kth_fold(dataset, i, n, seed) for i in range(n)]
