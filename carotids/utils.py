@@ -1,7 +1,7 @@
 from numpy import arange, asarray, concatenate
 from numpy.random import randint, seed
 from PIL import Image
-from torch import FloatTensor, manual_seed, randn, sqrt, tensor
+from torch import FloatTensor, manual_seed, randn, sqrt, Tensor
 from torch.utils.data import DataLoader, random_split
 from torch.utils.data.dataset import Dataset, Subset
 
@@ -26,18 +26,18 @@ class GaussianNoiseTransform(object):
         self.std = std
         self.mean = mean
 
-    def __call__(self, tensor: tensor) -> tensor:
+    def __call__(self, tensor: Tensor) -> Tensor:
         """Method which allows to call an instance of the class like function.
         Applies transformation on a tensor.
 
         Parameters
         ----------
-        tensor : tensor
+        tensor : Tensor
             Tensor to apply transformation on.
 
         Returns
         -------
-        tensor
+        Tensor
             Transformed tensor.
         """
         return tensor + randn(tensor.size()) * self.std + self.mean
@@ -55,7 +55,7 @@ class GaussianNoiseTransform(object):
         )
 
 
-def compute_mean_image_dataloader(dataloader: DataLoader) -> tensor:
+def compute_mean_image_dataloader(dataloader: DataLoader) -> Tensor:
     """Computes mean of an image dataloader (per channel).
 
     Parameters
@@ -65,7 +65,7 @@ def compute_mean_image_dataloader(dataloader: DataLoader) -> tensor:
 
     Returns
     -------
-    tensor
+    Tensor
         Mean of the dataloader.
     """
     mean = 0.0
@@ -78,19 +78,19 @@ def compute_mean_image_dataloader(dataloader: DataLoader) -> tensor:
     return mean
 
 
-def compute_std_image_dataloader(dataloader: DataLoader, mean: tensor) -> tensor:
+def compute_std_image_dataloader(dataloader: DataLoader, mean: Tensor) -> Tensor:
     """Computes std of an image dataloader (per channel).
 
     Parameters
     ----------
     dataloader : DataLoader
         Dataloader to compute standart deviation.
-    mean : tensor
+    mean : Tensor
         Mean of the dataloader.
 
     Returns
     -------
-    tensor
+    Tensor
         Standart deviation of the dataloader.
     """
     var = 0.0
@@ -219,14 +219,6 @@ def recompute_labels(
     y0, y1 = y0 * (img_height / target_height), y1 * (img_height / target_height)
 
     return FloatTensor([x0, y0, x1, y1])
-
-
-from numpy import arange, asarray, concatenate
-from numpy.random import randint, seed
-from PIL import Image
-from torch import FloatTensor, manual_seed, randn, sqrt, tensor
-from torch.utils.data import DataLoader, random_split
-from torch.utils.data.dataset import Dataset, Subset
 
 
 def get_cross_validation_kth_fold(
