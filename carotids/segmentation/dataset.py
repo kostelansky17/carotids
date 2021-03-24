@@ -112,7 +112,8 @@ class SegmentationDataset(Dataset):
 
         if self.encode_to_one_hot:
             mask = one_hot(mask).permute(2, 0, 1)
-
+            mask[0, (label[0, ...] == 1) & (label[1, ...] == 1)] = 1
+    
         return mask
 
 
