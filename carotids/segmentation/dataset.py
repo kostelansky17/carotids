@@ -43,7 +43,7 @@ def label_to_mask(
         mask = one_hot(mask).permute(2, 0, 1)
         mask[0, (label[0, ...] == 1) & (label[1, ...] == 1)] = 1
 
-        return mask
+    return mask
 
 
 class SegmentationDataset(Dataset):
