@@ -21,19 +21,20 @@ def dataset_dice_loss(dataset: Dataset, model: Module, device: device) -> Tensor
         The model to evaluate.
     device : device
         The device which is used for computation.
-    
+
     Returns
     -------
     Tensor
         Mean dice loss.
     """
+    model.eval()
     dice_loss = DiceLoss()
     dataloader = DataLoader(dataset, batch_size=1, shuffle=False)
 
     sum_dice_loss = 0.0
     for data, label in dataloader:
-        data.to(device)
-        label.to(device)
+        data = data.to(device)
+        label = label.to(device)
 
         prediction = model(data)
 
@@ -46,7 +47,7 @@ def dataset_dice_loss(dataset: Dataset, model: Module, device: device) -> Tensor
 def dataset_logcosh_dice_loss(
     dataset: Dataset, model: Module, device: device
 ) -> Tensor:
-    """Computes mean log-cosh dice loss between the values predicted by the 
+    """Computes mean log-cosh dice loss between the values predicted by the
     model and the ground truth.
 
     Parameters
@@ -57,19 +58,20 @@ def dataset_logcosh_dice_loss(
         The model to evaluate.
     device : device
         The device which is used for computation.
-    
+
     Returns
     -------
     Tensor
         Mean log-cosh dice loss.
     """
+    model.eval()
     lc_dice_loss = LogCoshDiceLoss()
     dataloader = DataLoader(dataset, batch_size=1, shuffle=False)
 
     sum_lc_dice_loss = 0.0
     for data, label in dataloader:
-        data.to(device)
-        label.to(device)
+        data = data.to(device)
+        label = label.to(device)
 
         prediction = model(data)
 
@@ -82,7 +84,7 @@ def dataset_logcosh_dice_loss(
 def dataset_classes_iou(
     dataset: Dataset, model: Module, n_classes: int, device: device
 ) -> list:
-    """Computes mean IoU for every class between the values predicted by the 
+    """Computes mean IoU for every class between the values predicted by the
     model and the ground truth.
 
     Parameters
@@ -93,18 +95,19 @@ def dataset_classes_iou(
         The model to evaluate.
     device : device
         The device which is used for computation.
-    
+
     Returns
     -------
     list
         Mean IoU for every class.
     """
+    model.eval()
     dataloader = DataLoader(dataset, batch_size=1, shuffle=False)
 
     classes_iou = {i: [] for i in range(n_classes)}
     for data, label in dataloader:
-        data.to(device)
-        label.to(device)
+        data = data.to(device)
+        label = label.to(device)
 
         prediction = model(data)
 
