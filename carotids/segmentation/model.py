@@ -197,9 +197,11 @@ class ConvBlock(Module):
         self.layers = Sequential(
             Conv2d(in_channels, out_channels, kernel_size, stride, padding),
             PReLU(),
+            BatchNorm2d(out_channels),
             Dropout2d(dropout_p),
             Conv2d(out_channels, out_channels, kernel_size, stride, padding),
             PReLU(),
+            BatchNorm2d(out_channels),
             Dropout2d(dropout_p),
         )
 
