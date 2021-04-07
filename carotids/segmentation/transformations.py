@@ -3,22 +3,15 @@ from numpy.random import normal, randint, uniform
 
 from PIL import Image
 from torch import Tensor
-from torchvision.transforms import (
-    RandomHorizontalFlip,
-    RandomVerticalFlip,
-    RandomRotation,
-    Resize,
-)
 from torchvision.transforms.functional import (
     adjust_brightness,
     adjust_contrast,
     adjust_gamma,
     crop,
+    hflip,
     rotate,
+    vflip,
 )
-
-HORIZONTAL_FLIP = RandomHorizontalFlip(1.0)
-VERTICAL_FLIP = RandomVerticalFlip(1.0)
 
 
 class SegRandomRotation:
@@ -60,8 +53,7 @@ class SegRandomRotation:
         """
         if uniform() <= self.p:
             rotation_angle = randint(self.min_angle, self.max_angle)
-            img = rotate(img, rotation_angle)
-            mask = rotate(mask, rotation_angle)
+            return rotate(img, rotation_angle), rotate(mask, rotation_angle)
 
         return img, mask
 
@@ -105,8 +97,8 @@ class SegRandomContrast:
             Transformed image and original mask.
         """
         if uniform() <= self.p:
-            contrast_factor = normal(self.mean, self.std)
-            img = adjust_contrast(img, contrast_factor)
+            contrast_factor = max(0, normal(self.mean, self.std))
+            return adjust_contrast(img, contrast_factor), mask
 
         return img, mask
 
@@ -150,8 +142,8 @@ class SegRandomGammaCorrection:
             Transformed image and original mask.
         """
         if uniform() <= self.p:
-            gamma = normal(self.mean, self.std)
-            img = adjust_gamma(img, gamma)
+            gamma = max(0, normal(self.mean, self.std))
+            return adjust_gamma(img, gamma), mask
 
         return img, mask
 
@@ -195,8 +187,8 @@ class SegRandomBrightness:
             Transformed image and original mask.
         """
         if uniform() <= self.p:
-            brightness_factor = uniform(self.mean, self.std)
-            img = adjust_brightness(img, brightness_factor)
+            brightness_factor = max(0, normal(self.mean, self.std))
+            return adjust_brightness(img, brightness_factor), mask
 
         return img, mask
 
@@ -233,8 +225,7 @@ class SegRandomHorizontalFlip:
             Transformed image and mask.
         """
         if uniform() <= self.p:
-            img = HORIZONTAL_FLIP(img)
-            mask = HORIZONTAL_FLIP(mask)
+            return hflip(img), hflip(mask)
 
         return img, mask
 
@@ -271,8 +262,7 @@ class SegRandomVerticalFlip:
             Transformed image and mask.
         """
         if uniform() <= self.p:
-            img = VERTICAL_FLIP(img)
-            mask = VERTICAL_FLIP(mask)
+            return vflip(img), vflip(mask)
 
         return img, mask
 
