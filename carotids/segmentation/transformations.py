@@ -1,5 +1,5 @@
 from numpy import asarray, where
-from numpy.random import randint, uniform
+from numpy.random import normal, randint, uniform
 
 from PIL import Image
 from torch import Tensor
@@ -72,23 +72,22 @@ class SegRandomContrast:
     Represents random contrast which transforms image.
     """
 
-    def __init__(
-        self, p: float = 0.5, min_contrast: int = 0.75, max_contrast: int = 1.25
-    ):
+    def __init__(self, p: float = 0.5, mean: float = 1.0, std: float = 0.025):
         """Initializes a random contrast.
 
         Parameters
         ----------
         p : float
             Probability with which transformation is applied.
-        min_contrast : int
-            Minimal contrast factor bound for transformation.
-        max_contrast : int
-            Max contrast factor for transformation.
+        mean : float
+            Mean of the contrast factor distribution for transformation.
+        std : float
+            Standard deviance of the contrast factor distribution for
+            transformation.
         """
         self.p = p
-        self.min_contrast = min_contrast
-        self.max_contrast = max_contrast
+        self.mean = mean
+        self.std = std
 
     def __call__(self, img: Image, mask: Tensor) -> tuple:
         """Applies contrast on an image.
@@ -106,7 +105,7 @@ class SegRandomContrast:
             Transformed image and original mask.
         """
         if uniform() <= self.p:
-            contrast_factor = uniform(self.min_contrast, self.max_contrast)
+            contrast_factor = normal(self.mean, self.std)
             img = adjust_contrast(img, contrast_factor)
 
         return img, mask
@@ -118,21 +117,22 @@ class SegRandomGammaCorrection:
     Represents random gamma correction which transforms image.
     """
 
-    def __init__(self, p: float = 0.5, min_gamma: int = 0.75, max_gamma: int = 1.25):
+    def __init__(self, p: float = 0.5, mean: float = 1.0, std: float = 0.025):
         """Initializes a random gamma correction.
 
         Parameters
         ----------
         p : float
             Probability with which transformation is applied.
-        min_gamma : int
-            Minimal gamma correction bound for transformation.
-        max_gamma : int
-            Max gamma correction for transformation.
+        mean : float
+            Mean of the gamma correction distribution for transformation.
+        std : float
+            Standard deviance of the gamma correction distribution for
+            transformation.
         """
         self.p = p
-        self.min_gamma = min_gamma
-        self.max_gamma = max_gamma
+        self.mean = mean
+        self.std = std
 
     def __call__(self, img: Image, mask: Tensor) -> tuple:
         """Applies gamma correction on an image.
@@ -150,7 +150,7 @@ class SegRandomGammaCorrection:
             Transformed image and original mask.
         """
         if uniform() <= self.p:
-            gamma = uniform(self.min_gamma, self.max_gamma)
+            gamma = normal(self.mean, self.std)
             img = adjust_gamma(img, gamma)
 
         return img, mask
@@ -162,23 +162,22 @@ class SegRandomBrightness:
     Represents random brightness which transforms image.
     """
 
-    def __init__(
-        self, p: float = 0.5, min_brightness: int = 0.75, max_brightness: int = 1.25
-    ):
+    def __init__(self, p: float = 0.5, mean: float = 1.0, std: float = 0.025):
         """Initializes a random brightness.
 
         Parameters
         ----------
         p : float
             Probability with which transformation is applied.
-        min_brightness : int
-            Minimal brightness factor bound for transformation.
-        max_brightness : int
-            Max brightness factor for transformation.
+        mean : float
+            Mean of the brightness factor distribution for transformation.
+        std : float
+            Standard deviance of the brightness factor distribution for
+            transformation.
         """
         self.p = p
-        self.min_brightness = min_brightness
-        self.max_brightness = max_brightness
+        self.mean = mean
+        self.std = std
 
     def __call__(self, img: Image, mask: Tensor) -> tuple:
         """Applies brightness on an image.
@@ -196,7 +195,7 @@ class SegRandomBrightness:
             Transformed image and original mask.
         """
         if uniform() <= self.p:
-            brightness_factor = uniform(self.min_brightness, self.max_brightness)
+            brightness_factor = uniform(self.mean, self.std)
             img = adjust_brightness(img, brightness_factor)
 
         return img, mask
@@ -337,7 +336,7 @@ class SegCrop:
 
 
 class SegCompose:
-    def __init__(self, transformations: list):
+    def __init__(self, transformations: list = []):
         """Initializes a composition of custom segmentation transformations.
 
         Parameters
