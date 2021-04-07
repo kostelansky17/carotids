@@ -321,7 +321,7 @@ class RightBlock(Module):
 
         self.up_layer = Sequential(
             Upsample(scale_factor=up_scale_factor, mode="bilinear", align_corners=True),
-            ConvBlock(in_channels, out_channels, kernel_size, stride, padding),
+            Conv2d(in_channels, out_channels, kernel_size, stride, padding),
         )
         self.conv_layers = ConvBlock(
             in_channels, out_channels, kernel_size, stride, padding, dropout_p
