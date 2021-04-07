@@ -49,32 +49,86 @@ class Unet(Module):
         super(Unet, self).__init__()
 
         self.L0 = LeftBlock(
-            3, 64, conv_kernel_size, conv_stride, conv_padding, pool_kernel_size
+            3,
+            64,
+            conv_kernel_size,
+            conv_stride,
+            conv_padding,
+            pool_kernel_size,
+            dropout_p,
         )
         self.L1 = LeftBlock(
-            64, 128, conv_kernel_size, conv_stride, conv_padding, pool_kernel_size
+            64,
+            128,
+            conv_kernel_size,
+            conv_stride,
+            conv_padding,
+            pool_kernel_size,
+            dropout_p,
         )
         self.L2 = LeftBlock(
-            128, 256, conv_kernel_size, conv_stride, conv_padding, pool_kernel_size
+            128,
+            256,
+            conv_kernel_size,
+            conv_stride,
+            conv_padding,
+            pool_kernel_size,
+            dropout_p,
         )
         self.L3 = LeftBlock(
-            256, 512, conv_kernel_size, conv_stride, conv_padding, pool_kernel_size
+            256,
+            512,
+            conv_kernel_size,
+            conv_stride,
+            conv_padding,
+            pool_kernel_size,
+            dropout_p,
         )
         self.L4 = LeftBlock(
-            512, 1024, conv_kernel_size, conv_stride, conv_padding, pool_kernel_size
+            512,
+            1024,
+            conv_kernel_size,
+            conv_stride,
+            conv_padding,
+            pool_kernel_size,
+            dropout_p,
         )
 
         self.R3 = RightBlock(
-            1024, 512, conv_kernel_size, conv_stride, conv_padding, up_scale_factor
+            1024,
+            512,
+            conv_kernel_size,
+            conv_stride,
+            conv_padding,
+            up_scale_factor,
+            dropout_p,
         )
         self.R2 = RightBlock(
-            512, 256, conv_kernel_size, conv_stride, conv_padding, up_scale_factor
+            512,
+            256,
+            conv_kernel_size,
+            conv_stride,
+            conv_padding,
+            up_scale_factor,
+            dropout_p,
         )
         self.R1 = RightBlock(
-            256, 128, conv_kernel_size, conv_stride, conv_padding, up_scale_factor
+            256,
+            128,
+            conv_kernel_size,
+            conv_stride,
+            conv_padding,
+            up_scale_factor,
+            dropout_p,
         )
         self.R0 = RightBlock(
-            128, 64, conv_kernel_size, conv_stride, conv_padding, up_scale_factor
+            128,
+            64,
+            conv_kernel_size,
+            conv_stride,
+            conv_padding,
+            up_scale_factor,
+            dropout_p,
         )
 
         self.last_layer = Conv2d(64, number_of_classes, kernel_size=1)
