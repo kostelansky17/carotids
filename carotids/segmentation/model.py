@@ -160,6 +160,202 @@ class Unet(Module):
         return self.last_layer(input)
 
 
+from copy import deepcopy
+from os.path import join
+import time
+
+from torch import device, save, set_grad_enabled
+from torch.cuda import is_available
+from torch.cuda import device as cuda_device
+
+from torch import cat, tensor
+from torch.nn import (
+    BatchNorm2d,
+    Conv2d,
+    Dropout2d,
+    MaxPool2d,
+    Module,
+    PReLU,
+    Sequential,
+    Upsample,
+)
+
+
+class BigUnet(Module):
+    """Big U-net model.
+
+    Represents implementation of Big U-net model for image segmentation. This 
+    architecture adds additional 
+    """
+
+    def __init__(
+        self,
+        number_of_classes: int,
+        conv_kernel_size: tuple = (3, 3),
+        conv_stride: int = 1,
+        conv_padding: int = 1,
+        pool_kernel_size: int = 2,
+        up_scale_factor: int = 2,
+        dropout_p: float = 0.25,
+        n_fillter_exponent: int = 8,
+    ) -> None:
+        """Initializes U-net model.
+
+        Parameters
+        ----------
+        number_of_classes : int
+            Number of classes in segmentation
+        kernel_size : tuple
+            Size of a kernel in a convolutional layer.
+        stride : int
+            Stride used in a convolutional layer.
+        padding : int
+            Number of padded pixels in a convolutional layer.
+        pool_kernel_size : int
+            Size of a kernel in a maxpooling layer.
+        up_scale_factor : int
+            Scale factor of an upsampling.
+        dropout_p : float
+            Probability of an element to be zeroed.
+        n_fillter_exponent : int
+            Exponent of 2 defining the begining number of convolutional filters.
+        """
+        super(BigUnet, self).__init__()
+
+        self.L0 = LeftBlock(
+            3,
+            2 ** n_fillter_exponent,
+            conv_kernel_size,
+            conv_stride,
+            conv_padding,
+            pool_kernel_size,
+            dropout_p,
+        )
+        self.L1 = LeftBlock(
+            2 ** n_fillter_exponent,
+            2 ** (n_fillter_exponent + 1),
+            conv_kernel_size,
+            conv_stride,
+            conv_padding,
+            pool_kernel_size,
+            dropout_p,
+        )
+        self.L2 = LeftBlock(
+            2 ** (n_fillter_exponent + 1),
+            2 ** (n_fillter_exponent + 2),
+            conv_kernel_size,
+            conv_stride,
+            conv_padding,
+            pool_kernel_size,
+            dropout_p,
+        )
+        self.L3 = LeftBlock(
+            2 ** (n_fillter_exponent + 2),
+            2 ** (n_fillter_exponent + 3),
+            conv_kernel_size,
+            conv_stride,
+            conv_padding,
+            pool_kernel_size,
+            dropout_p,
+        )
+        self.L4 = LeftBlock(
+            2 ** (n_fillter_exponent + 3),
+            2 ** (n_fillter_exponent + 4),
+            conv_kernel_size,
+            conv_stride,
+            conv_padding,
+            pool_kernel_size,
+            dropout_p,
+        )
+        self.L5 = LeftBlock(
+            2 ** (n_fillter_exponent + 4),
+            2 ** (n_fillter_exponent + 5),
+            conv_kernel_size,
+            conv_stride,
+            conv_padding,
+            pool_kernel_size,
+            dropout_p,
+        )
+
+        self.R4 = RightBlock(
+            2 ** (n_fillter_exponent + 5),
+            2 ** (n_fillter_exponent + 4),
+            conv_kernel_size,
+            conv_stride,
+            conv_padding,
+            up_scale_factor,
+            dropout_p,
+        )
+        self.R3 = RightBlock(
+            2 ** (n_fillter_exponent + 4),
+            2 ** (n_fillter_exponent + 3),
+            conv_kernel_size,
+            conv_stride,
+            conv_padding,
+            up_scale_factor,
+            dropout_p,
+        )
+        self.R2 = RightBlock(
+            2 ** (n_fillter_exponent + 3),
+            2 ** (n_fillter_exponent + 2),
+            conv_kernel_size,
+            conv_stride,
+            conv_padding,
+            up_scale_factor,
+            dropout_p,
+        )
+        self.R1 = RightBlock(
+            2 ** (n_fillter_exponent + 2),
+            2 ** (n_fillter_exponent + 1),
+            conv_kernel_size,
+            conv_stride,
+            conv_padding,
+            up_scale_factor,
+            dropout_p,
+        )
+        self.R0 = RightBlock(
+            2 ** (n_fillter_exponent + 1),
+            2 ** n_fillter_exponent,
+            conv_kernel_size,
+            conv_stride,
+            conv_padding,
+            up_scale_factor,
+            dropout_p,
+        )
+
+        self.last_layer = Conv2d(
+            2 ** n_fillter_exponent, number_of_classes, kernel_size=1
+        )
+
+    def forward(self, input: tensor) -> tensor:
+        """Applies model to an input.
+
+        Parameters
+        ----------
+        input : tensor
+            Image to use as an input.
+
+        Returns
+        -------
+        tensor:
+            Segmentation of an input.
+        """
+        input, l0 = self.L0(input)
+        input, l1 = self.L1(input)
+        input, l2 = self.L2(input)
+        input, l3 = self.L3(input)
+        input, l4 = self.L4(input)
+        _, l5 = self.L5(input)
+
+        input = self.R4(l5, l4)
+        input = self.R3(l4, l3)
+        input = self.R2(input, l2)
+        input = self.R1(input, l1)
+        input = self.R0(input, l0)
+
+        return self.last_layer(input)
+
+
 class ConvBlock(Module):
     """Block of convolutional layers.
 
