@@ -185,7 +185,7 @@ class BigUnet(Module):
     """Big U-net model.
 
     Represents implementation of Big U-net model for image segmentation. This 
-    architecture adds additional 
+    architecture adds additional layer in both arms.
     """
 
     def __init__(
