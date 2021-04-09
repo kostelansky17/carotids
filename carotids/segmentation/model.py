@@ -160,31 +160,10 @@ class Unet(Module):
         return self.last_layer(input)
 
 
-from copy import deepcopy
-from os.path import join
-import time
-
-from torch import device, save, set_grad_enabled
-from torch.cuda import is_available
-from torch.cuda import device as cuda_device
-
-from torch import cat, tensor
-from torch.nn import (
-    BatchNorm2d,
-    Conv2d,
-    Dropout2d,
-    MaxPool2d,
-    Module,
-    PReLU,
-    Sequential,
-    Upsample,
-)
-
-
 class BigUnet(Module):
     """Big U-net model.
 
-    Represents implementation of Big U-net model for image segmentation. This 
+    Represents implementation of Big U-net model for image segmentation. This
     architecture adds additional layer in both arms.
     """
 
