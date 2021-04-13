@@ -1,18 +1,9 @@
 from torch import cat, tensor
-from torch.nn import (
-    BatchNorm2d,
-    Conv2d,
-    Dropout2d,
-    MaxPool2d,
-    Module,
-    PReLU,
-    Sequential,
-    Upsample,
-)
+from torch.nn import BatchNorm2d, Conv2d, MaxPool2d, Module, PReLU, Sequential, Upsample
 
 
-class UnetV1(Module):
-    """U-net model, the version 1.
+class Unet(Module):
+    """U-net model.
 
     Represents implementation of U-net model for image segmentation.
     """
@@ -25,7 +16,6 @@ class UnetV1(Module):
         conv_padding: int = 1,
         pool_kernel_size: int = 2,
         up_scale_factor: int = 2,
-        dropout_p: float = 0.25,
     ) -> None:
         """Initializes U-net model.
 
@@ -43,10 +33,8 @@ class UnetV1(Module):
             Size of a kernel in a maxpooling layer.
         up_scale_factor : int
             Scale factor of an upsampling.
-        dropout_p : float
-            Probability of an element to be zeroed.
         """
-        super(UnetV1, self).__init__()
+        super(Unet, self).__init__()
 
         self.L0 = LeftBlock(
             3, 64, conv_kernel_size, conv_stride, conv_padding, pool_kernel_size
@@ -119,7 +107,6 @@ class ConvBlock(Module):
         kernel_size: tuple,
         stride: int,
         padding: int,
-        dropout_p: float,
     ):
         """Initializes a Block of convolutional layers.
 
@@ -135,18 +122,15 @@ class ConvBlock(Module):
             Stride used in a convolutional layer.
         padding : int
             Number of padded pixels in a convolutional layer.
-        dropout_p : float
-            Probability of an element to be zeroed.
         """
         super(ConvBlock, self).__init__()
 
         self.layers = Sequential(
             Conv2d(in_channels, out_channels, kernel_size, stride, padding),
             PReLU(),
-            Dropout2d(dropout_p),
             Conv2d(out_channels, out_channels, kernel_size, stride, padding),
+            BatchNorm2d(out_channels),
             PReLU(),
-            Dropout2d(dropout_p),
         )
 
     def forward(self, input: tensor) -> tensor:
@@ -181,7 +165,6 @@ class LeftBlock(Module):
         stride: int,
         padding: int,
         pool_kernel_size: int,
-        dropout_p: float,
     ):
         """Initializes a Left Block.
 
@@ -199,13 +182,11 @@ class LeftBlock(Module):
             Number of padded pixels in a convolutional layer.
         pool_kernel_size : int
             Size of a kernel in a maxpooling layer.
-        dropout_p : float
-            Probability of an element to be zeroed.
         """
         super(LeftBlock, self).__init__()
 
         self.conv_layers = ConvBlock(
-            in_channels, out_channels, kernel_size, stride, padding, dropout_p
+            in_channels, out_channels, kernel_size, stride, padding
         )
         self.pool_layer = MaxPool2d(pool_kernel_size)
 
@@ -242,7 +223,6 @@ class RightBlock(Module):
         stride: int,
         padding: int,
         up_scale_factor: int,
-        dropout_p: float,
     ):
         """Initializes a Left Block.
 
@@ -260,8 +240,6 @@ class RightBlock(Module):
             Number of padded pixels in a convolutional layer.
         up_scale_factor : int
             Scale factor of an upsampling.
-        dropout_p : float
-            Probability of an element to be zeroed.
         """
         super(RightBlock, self).__init__()
 
@@ -270,7 +248,7 @@ class RightBlock(Module):
             ConvBlock(in_channels, out_channels, kernel_size, stride, padding),
         )
         self.conv_layers = ConvBlock(
-            in_channels, out_channels, kernel_size, stride, padding, dropout_p
+            in_channels, out_channels, kernel_size, stride, padding
         )
 
     def forward(self, down_input: tensor, left_input: tensor) -> tensor:
