@@ -1,6 +1,7 @@
 from os import listdir
 
 from torch import cat, int64, Tensor, unsqueeze, zeros
+from torch import DataLoader
 from torch.nn.functional import one_hot
 from torch.utils.data import DataLoader
 from torch.utils.data.dataset import Dataset
@@ -109,15 +110,31 @@ class SegmentationDatamodule:
         self.train_loader, _, _, _ = split_dataset_into_dataloaders(
             train_set, val_split, batch_size
         )
-        _, _, self.val_loader, _ = split_dataset_into_dataloaders(
+        self.train_loader_simple, _, self.val_loader, _ = split_dataset_into_dataloaders(
             train_set_simple, val_split, batch_size
         )
-        self.test_loader = DataLoader(test_set, batch_size=batch_size, shuffle=False)
+        self.test_loader = DataLoader(test_set, batch_size=1, shuffle=False)
+
+        dataset_eval = SegmentationEvaluationDataset(
+            imgs_path,
+            labels_path,
+            trans_seg_val,
+            trans_torch,
+            False,
+            True,
+        )
+
+        train_val_set_eval, _, self.test_set_eval, _ = split_dataset(
+            dataset_simple, test_split
+        )
+        self.train_set_eval, _, self.val_set_eval, _ = split_dataset(
+            train_val_set_eval, val_split
+        )
 
     def get_train_loader(self) -> DataLoader:
         """Returns train DataLoader."""
         self.train_loader
-
+    
     def get_val_loader(self) -> DataLoader:
         """Returns validation DataLoader."""
         self.val_loader
@@ -125,6 +142,16 @@ class SegmentationDatamodule:
     def get_test_loader(self) -> DataLoader:
         """Returns test DataLoader."""
         self.test_loader
+
+    def get_train_eval_loader(self) -> DataLoader:
+        """Returns training dataset without the data augmentation."""
+        return self.train_loader_simple
+
+    def get_evaluation_datasets(self) -> tuple:
+        """Returns triple of datasets used for evaluation and visualization. The
+        order of the datasets is - Training, Validation, Test.
+        """
+        return self.train_set_eval, self.val_set_eval, self.test_set_eval
 
 
 class SegmentationDataset(Dataset):
