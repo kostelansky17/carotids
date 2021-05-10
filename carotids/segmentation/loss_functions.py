@@ -33,7 +33,7 @@ class DiceLoss(Module):
             The dice loss between the input and the target values.
         """
 
-        inputs = self.soft_max(inputs)
+        inputs = self.soft_max(inputs.float())
 
         for i, w in enumerate(self.weights):
             targets[:, i, :, :] = targets[:, i, :, :] * w

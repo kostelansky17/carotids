@@ -1,5 +1,4 @@
-from numpy import mean
-
+from numpy import mean, prod
 from torch import device, logical_and, logical_or, no_grad, Tensor
 from torch.nn import Module
 from torch.utils.data import DataLoader
@@ -121,3 +120,33 @@ def dataset_classes_iou(
             )
 
     return [mean(classes_iou[i]) for i in range(n_classes)]
+
+
+class SegAccuracy(Module):
+    """Accuracy used for the segmentation tasks."""
+
+    def __init__(self, size: tuple) -> None:
+        """Initializes the Accuracy module.
+
+        Parameters
+        ----------
+        size : tuple
+            The size of the network's input.
+        """
+        super(SegAccuracy, self).__init__()
+        self.size = prod(size)
+
+    def forward(self, targets: Tensor, outputs: Tensor):
+        """.
+
+        Parameters
+        ----------
+        targets : Tensor
+            The ground truth annotation.
+        outputs : Tensor
+            The classes predicted by the model.
+        """
+        outputs = outputs.argmax(dim=1)
+        targets = targets.argmax(dim=1)
+        
+        return (outputs == targets).sum() / self.size
