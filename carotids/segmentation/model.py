@@ -306,6 +306,35 @@ class BigUnet(Module):
             2 ** n_fillter_exponent, number_of_classes, kernel_size=1
         )
 
+    def forward(self, input: tensor) -> tensor:
+        """Applies model to an input.
+
+        Parameters
+        ----------
+        input : tensor
+            Image to use as an input.
+
+        Returns
+        -------
+        tensor:
+            Segmentation of an input.
+        """
+        input, l0 = self.L0(input)
+        input, l1 = self.L1(input)
+        input, l2 = self.L2(input)
+        input, l3 = self.L3(input)
+        input, l4 = self.L4(input)
+        _, l5 = self.L5(input)
+
+        input = self.R4(l5, l4)
+        input = self.R3(l4, l3)
+        input = self.R2(input, l2)
+        input = self.R1(input, l1)
+        input = self.R0(input, l0)
+
+        return self.last_layer(input)
+
+
 
 
 class UnetDVCFS(Module):
@@ -446,35 +475,6 @@ class UnetDVCFS(Module):
         input, l3 = self.L3(input)
         _, l4 = self.L4(input)
 
-        input = self.R3(l4, l3)
-        input = self.R2(input, l2)
-        input = self.R1(input, l1)
-        input = self.R0(input, l0)
-
-        return self.last_layer(input)
-
-
-    def forward(self, input: tensor) -> tensor:
-        """Applies model to an input.
-
-        Parameters
-        ----------
-        input : tensor
-            Image to use as an input.
-
-        Returns
-        -------
-        tensor:
-            Segmentation of an input.
-        """
-        input, l0 = self.L0(input)
-        input, l1 = self.L1(input)
-        input, l2 = self.L2(input)
-        input, l3 = self.L3(input)
-        input, l4 = self.L4(input)
-        _, l5 = self.L5(input)
-
-        input = self.R4(l5, l4)
         input = self.R3(l4, l3)
         input = self.R2(input, l2)
         input = self.R1(input, l1)
