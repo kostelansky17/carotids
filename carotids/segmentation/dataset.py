@@ -41,7 +41,6 @@ def label_to_mask(
     if plaque_with_wall:
         mask[mask == 2] = 1
         mask[mask == 3] = 2
-        
 
     if encode_to_one_hot:
         mask = one_hot(mask).permute(2, 0, 1)
@@ -67,7 +66,7 @@ class SegmentationDatamodule:
         val_split: float = 0.1,
         test_split: float = 0.1,
         num_workers: int = 8,
-        plaque_with_wall: bool = False
+        plaque_with_wall: bool = False,
     ) -> None:
         """Initializes a segmentation datamodule.
 
@@ -116,20 +115,28 @@ class SegmentationDatamodule:
         )
 
         train_set, _, _, _ = split_dataset(dataset, test_split)
-        train_set_simple, _, self.test_set, _ = split_dataset(dataset_simple, test_split)
+        train_set_simple, _, self.test_set, _ = split_dataset(
+            dataset_simple, test_split
+        )
 
         self.train_loader, _, _, _ = split_dataset_into_dataloaders(
             train_set, val_split, batch_size, num_workers=num_workers
         )
-        self.train_set, _, self.val_set, _ = split_dataset(
-            train_set_simple, val_split
+        self.train_set, _, self.val_set, _ = split_dataset(train_set_simple, val_split)
+
+        self.val_loader = DataLoader(
+            self.val_set, batch_size=batch_size, shuffle=False, num_workers=num_workers
         )
 
-        self.val_loader = DataLoader(self.val_set, batch_size=batch_size, shuffle=False, num_workers=num_workers)
-        
-        self.train_eval_loader = DataLoader(self.train_set, batch_size=1, shuffle=False, num_workers=num_workers)
-        self.val_eval_loader = DataLoader(self.val_set, batch_size=1, shuffle=False, num_workers=num_workers)
-        self.test_eval_loader = DataLoader(self.test_set, batch_size=1, shuffle=False, num_workers=num_workers)
+        self.train_eval_loader = DataLoader(
+            self.train_set, batch_size=1, shuffle=False, num_workers=num_workers
+        )
+        self.val_eval_loader = DataLoader(
+            self.val_set, batch_size=1, shuffle=False, num_workers=num_workers
+        )
+        self.test_eval_loader = DataLoader(
+            self.test_set, batch_size=1, shuffle=False, num_workers=num_workers
+        )
 
         eval_dataset = SegmentationEvaluationDataset(
             imgs_path,
@@ -139,11 +146,14 @@ class SegmentationDatamodule:
             trans_torch_label,
             plaque_with_wall,
             True,
-        )        
+        )
 
-        train_val_eval_set, _, self.test_eval_set, _ = split_dataset(eval_dataset, test_split)
-        self.train_eval_set, _, self.val_eval_set, _ = split_dataset(train_val_eval_set, val_split)
-
+        train_val_eval_set, _, self.test_eval_set, _ = split_dataset(
+            eval_dataset, test_split
+        )
+        self.train_eval_set, _, self.val_eval_set, _ = split_dataset(
+            train_val_eval_set, val_split
+        )
 
 
 class SegmentationDataset(Dataset):
@@ -214,7 +224,9 @@ class SegmentationDataset(Dataset):
 
         img, label = self.transformations_custom(img, label)
         if self.transformations_torch_label is None:
-            img, label = self.transformations_torch(img), self.transformations_torch(label)
+            img, label = self.transformations_torch(img), self.transformations_torch(
+                label
+            )
         else:
             img = self.transformations_torch(img)
             label = self.transformations_torch_label(label)
@@ -314,7 +326,7 @@ class SegmentationEvaluationDataset(Dataset):
             else:
                 img_torch = self.transformations_torch(img)
                 label_torch = self.transformations_torch_label(label)
-                
+
             label_torch = label_to_mask(
                 label_torch, self.plaque_with_wall, self.encode_to_one_hot
             )

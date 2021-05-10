@@ -123,7 +123,11 @@ def compute_standardization_image_dataloader(dataloader: DataLoader) -> tuple:
 
 
 def split_dataset_into_dataloaders(
-    dataset: Dataset, val_split: float = 0.1, batch_size: int = 64, seed: int = 17, num_workers: int = 8
+    dataset: Dataset,
+    val_split: float = 0.1,
+    batch_size: int = 64,
+    seed: int = 17,
+    num_workers: int = 8,
 ):
     """Splits dataset into train and validation ones and transform them into
     dataloaders.
@@ -149,8 +153,12 @@ def split_dataset_into_dataloaders(
     """
     trainset, train_size, valset, val_size = split_dataset(dataset, val_split, seed)
 
-    train_loader = DataLoader(trainset, batch_size=batch_size, shuffle=True, num_workers=num_workers)
-    val_loader = DataLoader(valset, batch_size=batch_size, shuffle=False, num_workers=num_workers)
+    train_loader = DataLoader(
+        trainset, batch_size=batch_size, shuffle=True, num_workers=num_workers
+    )
+    val_loader = DataLoader(
+        valset, batch_size=batch_size, shuffle=False, num_workers=num_workers
+    )
 
     return train_loader, train_size, val_loader, val_size
 
@@ -226,7 +234,7 @@ def recompute_labels(
 def get_cross_validation_kth_fold(
     dataset: Dataset, k: int, n: int, start_seed: int = 17
 ) -> tuple:
-    """Splits the dataset into train and test subsets, accordingly to the 
+    """Splits the dataset into train and test subsets, accordingly to the
     selected number of the cross-validation fold.
 
     Parameters
@@ -239,7 +247,7 @@ def get_cross_validation_kth_fold(
         Number of folds in the cross-validation.
     seed : int
         seed
-    
+
     Returns
     -------
     tuple
@@ -259,8 +267,8 @@ def get_cross_validation_kth_fold(
 
 
 def get_cross_validation_folds(dataset: Dataset, n: int, seed: int = 17) -> list:
-    """Splits dataset into n cross-validation folds. Returns an array with 
-    tuples composed of train and test sub-datasets. 
+    """Splits dataset into n cross-validation folds. Returns an array with
+    tuples composed of train and test sub-datasets.
 
     Parameters
     ----------
@@ -270,7 +278,7 @@ def get_cross_validation_folds(dataset: Dataset, n: int, seed: int = 17) -> list
         Number of folds in the cross-validation.
     seed : int
         seed
-    
+
     Returns
     -------
     list

@@ -24,8 +24,8 @@ class SegModule(LightningModule):
         model: Module,
         loss: Module,
         learning_rate: float = 0.001,
-        patience: int = 50, 
-        accuracy: SegAccuracy = None
+        patience: int = 50,
+        accuracy: SegAccuracy = None,
     ) -> None:
         """Initializes the Segmentation Module.
 
@@ -38,8 +38,8 @@ class SegModule(LightningModule):
         learning_rate : float
             The learning rate used during the traing.
         patience : int
-            Number of epochs with no improvement after which learning rate will 
-            be reduced. 
+            Number of epochs with no improvement after which learning rate will
+            be reduced.
         accuracy : SegAccuracy
             The Accuracy module.
         """
@@ -57,7 +57,7 @@ class SegModule(LightningModule):
         ----------
         x: Tensor
             Input to the model.
-        
+
         Returns
         -------
         Tensor
@@ -66,7 +66,7 @@ class SegModule(LightningModule):
         return self.model.forward(x)
 
     def training_step(self, batch: tuple, batch_idx: int) -> Tensor:
-        """Passes an batch trough the network and evaluates it using loss 
+        """Passes an batch trough the network and evaluates it using loss
         function. The training loss is logged.
 
         Parameters
@@ -75,7 +75,7 @@ class SegModule(LightningModule):
             The tuple with the input to the model and the label.
         batch_idx : int
             Index of the batch.
-        
+
         Returns
         -------
         Tensor
@@ -84,11 +84,13 @@ class SegModule(LightningModule):
 
         loss = self._shared_step(batch)
 
-        self.log("train_loss", loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
+        self.log(
+            "train_loss", loss, on_step=True, on_epoch=True, prog_bar=True, logger=True
+        )
         return loss
 
     def validation_step(self, batch: tuple, batch_idx: int) -> Tensor:
-        """Passes an batch trough the network and evaluates it using loss 
+        """Passes an batch trough the network and evaluates it using loss
         function. The validation loss is logged.
 
         Parameters
@@ -97,20 +99,22 @@ class SegModule(LightningModule):
             The tuple with the input to the model and the label.
         batch_idx : int
             Index of the batch.
-        
+
         Returns
         -------
         Tensor
             The loss of the batch.
         """
         loss = self._shared_step(batch)
-        self.log("val_loss", loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
+        self.log(
+            "val_loss", loss, on_step=True, on_epoch=True, prog_bar=True, logger=True
+        )
 
         return loss
 
     def test_step(self, batch: tuple, batch_idx: int) -> None:
-        """Passes an batch trough the network and evaluates it using loss 
-        function. The test loss is logged (if the Accuracy module was passed 
+        """Passes an batch trough the network and evaluates it using loss
+        function. The test loss is logged (if the Accuracy module was passed
         during the initialization, the accuracy is logged as well).
 
         Parameters
@@ -124,19 +128,19 @@ class SegModule(LightningModule):
         x, y = batch
         y_pred = self.forward(x)
         self.log("test_loss", self.loss(y, y_pred))
-        
+
         if self.accuracy is not None:
             self.log("test_acc", self.accuracy(y, y_pred))
 
     def _shared_step(self, batch: tuple) -> Tensor:
-        """Passes an batch trough the network and evaluates it using loss 
+        """Passes an batch trough the network and evaluates it using loss
         function.
 
         Parameters
         ----------
         batch : tuple
             The tuple with the input to the model and the label.
-        
+
         Returns
         -------
         Tensor
@@ -147,9 +151,9 @@ class SegModule(LightningModule):
 
         return self.loss(y, y_pred)
 
-    def configure_optimizers(self)-> dict:
+    def configure_optimizers(self) -> dict:
         """Configures the optimizers used in training. Returns a dictionary with
-        optimizer, leartning rate scheduler and the name of the metric to 
+        optimizer, leartning rate scheduler and the name of the metric to
         monitor for reducing the learning rate.
 
         Returns
@@ -163,7 +167,7 @@ class SegModule(LightningModule):
             "lr_scheduler": ReduceLROnPlateau(optimizer, patience=self.patience),
             "monitor": "train_loss_epoch",
         }
- 
+
     def confusion_matrix(
         self,
         data_set: SegmentationEvaluationDataset,
@@ -177,7 +181,7 @@ class SegModule(LightningModule):
             Dataset to evaluate.
         device : device
             Device used for computation.
-        
+
         Returns
         -------
         ndarray
@@ -189,12 +193,12 @@ class SegModule(LightningModule):
         for img, _, _, label, _ in data_set:
             img = img.to(device)
             prediction = self.model(img.unsqueeze(0))
-            
+
             cnf = confusion_matrix(
-                    prediction.argmax(dim=1).view(-1).cpu().numpy(),
-                    label.argmax(dim=0).view(-1).cpu().numpy(),
-                    labels=arange(label.size()[0])
-                )
+                prediction.argmax(dim=1).view(-1).cpu().numpy(),
+                label.argmax(dim=0).view(-1).cpu().numpy(),
+                labels=arange(label.size()[0]),
+            )
 
             cnf_matrices.append(cnf)
 
@@ -236,7 +240,13 @@ class SegModule(LightningModule):
             label = label.numpy()
 
             plot_segmentation_prediction(
-                prediction, label, raw_img, raw_label, image_shape, img_name, folder_path
+                prediction,
+                label,
+                raw_img,
+                raw_label,
+                image_shape,
+                img_name,
+                folder_path,
             )
 
     def plot_datasets(
@@ -260,7 +270,7 @@ class SegModule(LightningModule):
             The shape of the network's input.
         """
         self.model.to(device)
-        save_path = join (save_path, "model_predictions")
+        save_path = join(save_path, "model_predictions")
         if not exists(save_path):
             makedirs(save_path)
 

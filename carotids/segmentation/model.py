@@ -335,8 +335,6 @@ class BigUnet(Module):
         return self.last_layer(input)
 
 
-
-
 class UnetDVCFS(Module):
     """U-net model wth depth-wise convolutional filter size.
 
@@ -672,4 +670,3 @@ class RightBlock(Module):
         output = self.conv_layers(input)
 
         return output
-

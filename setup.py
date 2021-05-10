@@ -1,5 +1,5 @@
 import setuptools
- 
+
 setuptools.setup(
     name="carotids-kostelansky",
     version="1.0",

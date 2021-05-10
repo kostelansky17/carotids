@@ -148,5 +148,5 @@ class SegAccuracy(Module):
         """
         outputs = outputs.argmax(dim=1)
         targets = targets.argmax(dim=1)
-        
+
         return (outputs == targets).sum() / self.size

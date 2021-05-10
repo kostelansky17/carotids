@@ -28,12 +28,12 @@ def plot_segmentation_prediction(
     raw_label : Image
         The image of the original label.
     img_shape : tuple
-        The shape of the network's input. 
+        The shape of the network's input.
     img_name : str
-        Name of the original input image file. 
+        Name of the original input image file.
     save_path : str
         Path to a folder to which save the figure.
-    """ 
+    """
     raw_img = raw_img.resize(img_shape)
 
     final_mask = mark_boundaries(raw_img, prediction == 1, [255, 0, 0])
@@ -42,21 +42,21 @@ def plot_segmentation_prediction(
 
     final_seg_mask = zeros(img_shape + (3,), uint8)
     final_seg_mask[prediction == 1] = [255, 0, 0]
-    final_seg_mask[prediction == 2] = [0, 255, 0] 
+    final_seg_mask[prediction == 2] = [0, 255, 0]
     final_seg_mask[prediction == 3] = [0, 0, 255]
 
     final_label = mark_boundaries(raw_img, label[1] & (label[0] == 0), [255, 0, 0])
     final_label = mark_boundaries(final_label, label[1] & label[0], [255, 255, 0])
     final_label = mark_boundaries(final_label, label[2], [0, 255, 0])
-    
+
     if label.shape[0] == 4:
         final_label = mark_boundaries(final_label, label[3], [0, 0, 255])
 
     fig = plt.figure(figsize=(14, 14))
 
-    fig.add_subplot(2, 2, 1)  
+    fig.add_subplot(2, 2, 1)
     plt.imshow(final_mask)
-    
+
     plt.title("Prediction")
 
     fig.add_subplot(2, 2, 2)
