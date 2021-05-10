@@ -123,7 +123,7 @@ def compute_standardization_image_dataloader(dataloader: DataLoader) -> tuple:
 
 
 def split_dataset_into_dataloaders(
-    dataset: Dataset, val_split: float = 0.1, batch_size: int = 64, seed: int = 17
+    dataset: Dataset, val_split: float = 0.1, batch_size: int = 64, seed: int = 17, num_workers: int = 8
 ):
     """Splits dataset into train and validation ones and transform them into
     dataloaders.
@@ -138,6 +138,8 @@ def split_dataset_into_dataloaders(
         Size of batches in dataloaders.
     seed : int
         Seed used for spliting samples
+    num_workers : int
+        The number of worker processes used for data loading.
 
     Returns
     -------
@@ -147,8 +149,8 @@ def split_dataset_into_dataloaders(
     """
     trainset, train_size, valset, val_size = split_dataset(dataset, val_split, seed)
 
-    train_loader = DataLoader(trainset, batch_size=batch_size, shuffle=True)
-    val_loader = DataLoader(valset, batch_size=batch_size, shuffle=False)
+    train_loader = DataLoader(trainset, batch_size=batch_size, shuffle=True, num_workers=num_workers)
+    val_loader = DataLoader(valset, batch_size=batch_size, shuffle=False, num_workers=num_workers)
 
     return train_loader, train_size, val_loader, val_size
 
