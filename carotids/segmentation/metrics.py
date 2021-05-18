@@ -136,7 +136,7 @@ class SegAccuracy(Module):
         super(SegAccuracy, self).__init__()
         self.size = prod(size)
 
-    def forward(self, targets: Tensor, outputs: Tensor):
+    def forward(self, outputs: Tensor, targets: Tensor):
         """.
 
         Parameters
