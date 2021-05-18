@@ -136,15 +136,15 @@ class SegAccuracy(Module):
         super(SegAccuracy, self).__init__()
         self.size = prod(size)
 
-    def forward(self, outputs: Tensor, targets: Tensor):
-        """.
+    def forward(self, outputs: Tensor, targets: Tensor) -> Tensor:
+        """Computes the accuracy of a model's output.
 
         Parameters
         ----------
-        targets : Tensor
-            The ground truth annotation.
         outputs : Tensor
             The classes predicted by the model.
+        targets : Tensor
+            The ground truth annotation.
         """
         outputs = outputs.argmax(dim=1)
         targets = targets.argmax(dim=1)

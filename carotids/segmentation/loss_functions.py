@@ -2,6 +2,7 @@ from torch import cosh, log, ones, Tensor
 from torch.nn import Module, Softmax
 from torch.nn.functional import softmax
 
+
 class DiceLoss(Module):
     """Dice loss used for the segmentation tasks."""
 
@@ -79,6 +80,21 @@ class LogCoshDiceLoss(Module):
 
 
 def logcosh_dice_loss(outputs: Tensor, targets: Tensor, weights: list = []) -> Tensor:
+    """Computes log-cosh dice loss between the input and the target values.
+
+    Parameters
+    ----------
+    outputs : Tensor
+        Values predicted by the model.
+    targets : Tensor
+        The target values.
+    weights: list
+        Rescaling weights given to each class.
+    Returns
+    -------
+    Tensor
+        The log-cosh dice loss between the input and the target values.
+    """
     outputs = softmax(outputs.float(), dim=1)
 
     for i, w in enumerate(weights):
