@@ -20,7 +20,7 @@ class SegRandomRotation:
     Represents random rotation which transforms image and segmentation mask.
     """
 
-    def __init__(self, p: float = 0.5, min_angle: int = 0, max_angle: int = 360):
+    def __init__(self, p: float = 0.5, min_angle: int = -10, max_angle: int = 10):
         """Initializes a random rotation.
 
         Parameters

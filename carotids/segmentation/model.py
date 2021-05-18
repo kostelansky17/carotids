@@ -335,6 +335,152 @@ class BigUnet(Module):
         return self.last_layer(input)
 
 
+class UnetDVCFS(Module):
+    """U-net model wth depth-wise convolutional filter size.
+
+    Represents implementation of U-net model for image segmentation.
+    """
+
+    def __init__(
+        self,
+        number_of_classes: int,
+        pool_kernel_size: int = 2,
+        up_scale_factor: int = 2,
+        dropout_p: float = 0.25,
+    ) -> None:
+        """Initializes U-net model.
+
+        Parameters
+        ----------
+        number_of_classes : int
+            Number of classes in segmentation
+        kernel_size : tuple
+            Size of a kernel in a convolutional layer.
+        stride : int
+            Stride used in a convolutional layer.
+        padding : int
+            Number of padded pixels in a convolutional layer.
+        pool_kernel_size : int
+            Size of a kernel in a maxpooling layer.
+        up_scale_factor : int
+            Scale factor of an upsampling.
+        dropout_p : float
+            Probability of an element to be zeroed.
+        """
+        super(UnetDVCFS, self).__init__()
+
+        self.L0 = LeftBlock(
+            3,
+            64,
+            11,
+            1,
+            5,
+            pool_kernel_size,
+            dropout_p,
+        )
+        self.L1 = LeftBlock(
+            64,
+            128,
+            9,
+            1,
+            4,
+            pool_kernel_size,
+            dropout_p,
+        )
+        self.L2 = LeftBlock(
+            128,
+            256,
+            7,
+            1,
+            3,
+            pool_kernel_size,
+            dropout_p,
+        )
+        self.L3 = LeftBlock(
+            256,
+            512,
+            5,
+            1,
+            2,
+            pool_kernel_size,
+            dropout_p,
+        )
+        self.L4 = LeftBlock(
+            512,
+            1024,
+            3,
+            1,
+            1,
+            pool_kernel_size,
+            dropout_p,
+        )
+
+        self.R3 = RightBlock(
+            1024,
+            512,
+            5,
+            1,
+            2,
+            up_scale_factor,
+            dropout_p,
+        )
+        self.R2 = RightBlock(
+            512,
+            256,
+            7,
+            1,
+            3,
+            up_scale_factor,
+            dropout_p,
+        )
+        self.R1 = RightBlock(
+            256,
+            128,
+            9,
+            1,
+            4,
+            up_scale_factor,
+            dropout_p,
+        )
+        self.R0 = RightBlock(
+            128,
+            64,
+            11,
+            1,
+            5,
+            up_scale_factor,
+            dropout_p,
+        )
+
+        self.last_layer = Conv2d(64, number_of_classes, kernel_size=1)
+
+    def forward(self, input: tensor) -> tensor:
+        """Applies model to an input.
+
+        Parameters
+        ----------
+        input : tensor
+            Image to use as an input.
+
+        Returns
+        -------
+        tensor:
+            Segmentation of an input.
+        """
+        input, l0 = self.L0(input)
+        input, l1 = self.L1(input)
+        input, l2 = self.L2(input)
+        input, l3 = self.L3(input)
+        _, l4 = self.L4(input)
+
+        input = self.R3(l4, l3)
+        input = self.R2(input, l2)
+        input = self.R1(input, l1)
+        input = self.R0(input, l0)
+
+        return self.last_layer(input)
+
+
 class ConvBlock(Module):
     """Block of convolutional layers.
 

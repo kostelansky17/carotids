@@ -1,5 +1,6 @@
 from torch import cosh, log, ones, Tensor
 from torch.nn import Module, Softmax
+from torch.nn.functional import softmax
 
 
 class DiceLoss(Module):
@@ -17,12 +18,12 @@ class DiceLoss(Module):
         self.soft_max = Softmax(dim=1)
         self.weights = weights
 
-    def forward(self, inputs: Tensor, targets: Tensor):
+    def forward(self, outputs: Tensor, targets: Tensor) -> Tensor:
         """Computes dice loss between the input and the target values.
 
         Parameters
         ----------
-        inputs : Tensor
+        outputs : Tensor
             Values predicted by the model.
         targets : Tensor
             The target values.
@@ -33,16 +34,16 @@ class DiceLoss(Module):
             The dice loss between the input and the target values.
         """
 
-        inputs = self.soft_max(inputs)
+        outputs = self.soft_max(outputs.float())
 
         for i, w in enumerate(self.weights):
             targets[:, i, :, :] = targets[:, i, :, :] * w
 
-        inputs = inputs.view(-1)
+        outputs = outputs.view(-1)
         targets = targets.view(-1)
 
-        intersection = (inputs * targets).sum()
-        dice = (2.0 * intersection) / (inputs.sum() + targets.sum())
+        intersection = (outputs * targets).sum()
+        dice = (2.0 * intersection) / (outputs.sum() + targets.sum())
 
         return 1 - dice
 
@@ -57,12 +58,12 @@ class LogCoshDiceLoss(Module):
         super(LogCoshDiceLoss, self).__init__()
         self.dice_loss = DiceLoss(weights)
 
-    def forward(self, inputs, targets):
+    def forward(self, outputs: Tensor, targets: Tensor) -> Tensor:
         """Computes log-cosh dice loss between the input and the target values.
 
         Parameters
         ----------
-        inputs : Tensor
+        outputs : Tensor
             Values predicted by the model.
         targets : Tensor
             The target values.
@@ -73,6 +74,36 @@ class LogCoshDiceLoss(Module):
             The log-cosh dice loss between the input and the target values.
         """
 
-        dice_loss = self.dice_loss(inputs, targets)
+        dice_loss = self.dice_loss(outputs, targets)
 
         return log(cosh(dice_loss))
+
+
+def logcosh_dice_loss(outputs: Tensor, targets: Tensor, weights: list = []) -> Tensor:
+    """Computes log-cosh dice loss between the input and the target values.
+
+    Parameters
+    ----------
+    outputs : Tensor
+        Values predicted by the model.
+    targets : Tensor
+        The target values.
+    weights: list
+        Rescaling weights given to each class.
+    Returns
+    -------
+    Tensor
+        The log-cosh dice loss between the input and the target values.
+    """
+    outputs = softmax(outputs.float(), dim=1)
+
+    for i, w in enumerate(weights):
+        targets[:, i, :, :] = targets[:, i, :, :] * w
+
+    outputs = outputs.view(-1)
+    targets = targets.view(-1)
+
+    intersection = (outputs * targets).sum()
+    dice = (2.0 * intersection) / (outputs.sum() + targets.sum())
+
+    return log(cosh(1 - dice))
