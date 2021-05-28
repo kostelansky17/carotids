@@ -46,7 +46,7 @@ def plot_segmentation_prediction(
     final_seg_mask[prediction == 3] = [0, 0, 255]
 
     final_label = mark_boundaries(raw_img, label[1] & (label[0] == 0), [255, 0, 0])
-    final_label = mark_boundaries(final_label, label[1] & label[0], [255, 255, 0])
+    final_label = mark_boundaries(final_label, label[1] & label[0], [255, 0, 0])
     final_label = mark_boundaries(final_label, label[2], [0, 255, 0])
 
     if label.shape[0] == 4:

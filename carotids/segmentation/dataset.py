@@ -1,6 +1,6 @@
 from os import listdir
 
-from torch import cat, int64, Tensor, unsqueeze, zeros
+from torch import cat, int64,   , unsqueeze, zeros
 from torch.nn.functional import one_hot
 from torch.utils.data import DataLoader
 from torch.utils.data.dataset import Dataset
@@ -114,25 +114,25 @@ class SegmentationDatamodule:
             True,
         )
 
-        train_set, _, _, _ = split_dataset(dataset, test_split)
-        train_set_simple, _, self.test_set, _ = split_dataset(
+        self.train_val_set, _, _, _ = split_dataset(dataset, test_split)
+        self.train_val_set_simple, _, self.test_set, _ = split_dataset(
             dataset_simple, test_split
         )
 
         self.train_loader, _, _, _ = split_dataset_into_dataloaders(
-            train_set, val_split, batch_size, num_workers=num_workers
+            self.train_val_set, val_split, batch_size, num_workers=num_workers
         )
-        self.train_set, _, self.val_set, _ = split_dataset(train_set_simple, val_split)
+        self.train_set_simple, _, self.val_set_simple, _ = split_dataset(self.train_val_set_simple, val_split)
 
         self.val_loader = DataLoader(
-            self.val_set, batch_size=batch_size, shuffle=False, num_workers=num_workers
+            self.val_set_simple, batch_size=batch_size, shuffle=False, num_workers=num_workers
         )
 
         self.train_eval_loader = DataLoader(
-            self.train_set, batch_size=1, shuffle=False, num_workers=num_workers
+            self.train_set_simple, batch_size=1, shuffle=False, num_workers=num_workers
         )
         self.val_eval_loader = DataLoader(
-            self.val_set, batch_size=1, shuffle=False, num_workers=num_workers
+            self.val_set_simple, batch_size=1, shuffle=False, num_workers=num_workers
         )
         self.test_eval_loader = DataLoader(
             self.test_set, batch_size=1, shuffle=False, num_workers=num_workers
