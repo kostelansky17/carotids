@@ -13,7 +13,7 @@ from torch.optim.lr_scheduler import ReduceLROnPlateau
 
 from carotids.segmentation.dataset import SegmentationEvaluationDataset
 from carotids.segmentation.metrics import dataset_classes_iou, SegAccuracy
-from carotids.segmentation.visualization import plot_segmentation_prediction
+from carotids.segmentation.visualization import plot_segmentation_prediction, plot_segmentation_prediction_differences
 
 
 import matplotlib.pyplot as plt
@@ -458,6 +458,84 @@ class SegModule(LightningModule):
         ):
             print(f"Plotting {name}")
             self.plot_dataset(data_set, save_path, name, device, image_shape)
+
+    def plot_dataset_differences(
+        self,
+        data_set: SegmentationEvaluationDataset,
+        save_path: str,
+        folder_name: str,
+        device: device,
+        image_shape: tuple = (256, 256),
+    ) -> None:
+        """Plots the predictions for the data_set.
+
+        Parameters
+        ----------
+        data_set : SegmentationEvaluationDataset
+            Dataset to plot.
+        save_path : str
+            Path to save folder with the plots.
+        folder_name : str
+            A name of the folder to which save the plots.
+        device : device
+            Device used for computation.
+        image_shape : tuple
+            The shape of the network's input.
+        """
+        self.model.eval()
+        self.model.to(device)
+        folder_path = join(save_path, folder_name)
+
+        if not exists(folder_path):
+            makedirs(folder_path)
+
+        for img, raw_img, img_name, label, raw_label in data_set:
+            img = img.to(device)
+
+            prediction = self.model(img.unsqueeze(0))
+            prediction = prediction.squeeze().cpu().detach().numpy().argmax(0)
+            label = label.numpy()
+
+            plot_segmentation_prediction_differences(
+                prediction,
+                label,
+                raw_img,
+                raw_label,
+                image_shape,
+                img_name,
+                folder_path,
+            )
+    
+    def plot_datasets_differences(
+        self,
+        datasets: list,
+        save_path: str,
+        device: device,
+        image_shape: tuple = (256, 256),
+    ) -> None:
+        """
+
+        Parameters
+        ----------
+        datasets : list
+            List of datasets to plot the figures.
+        save_path : str
+            The directory in which are saved the plots.
+        device : device
+            Device used for computation.
+        image_shape : tuple
+            The shape of the network's input.
+        """
+        self.model.to(device)
+        save_path = join(save_path, "model_predictions_differences")
+        if not exists(save_path):
+            makedirs(save_path)
+
+        for data_set, name in zip(
+            datasets, ["train_set", "validation_set", "test_set"]
+        ):
+            print(f"Plotting {name}")
+            self.plot_dataset_differences(data_set, save_path, name, device, image_shape)
 
     def dataset_iou(
         self, dataset: SegmentationEvaluationDataset, device: device, n_classes: int

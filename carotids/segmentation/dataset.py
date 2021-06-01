@@ -1,6 +1,6 @@
 from os import listdir
 
-from torch import cat, int64,   , unsqueeze, zeros
+from torch import cat, int64, Tensor, unsqueeze, zeros
 from torch.nn.functional import one_hot
 from torch.utils.data import DataLoader
 from torch.utils.data.dataset import Dataset
